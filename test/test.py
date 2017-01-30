@@ -70,7 +70,7 @@ class TestServer:
             return False
 
 #config section
-temp_datastore_path ="/tmp/test-tmp-datastore"
+temp_datastore_path ="temp/test-tmp-datastore"
 #==================[START: initial checks]==================
 #check to make sure we are running tests on a valid platform
 if ("linux" not in sys.platform) and ("darwin" not in sys.platform):
