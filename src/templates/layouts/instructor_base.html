@@ -3,37 +3,17 @@
 {% set show_sidenavbar = True %}
 
 {% block sidenavbar %}
-<script type="text/javascript">
-    function sidebarAction(path) {
-        var relPath = '/' + path;
-        
-        var selectedCourse = $('#courseSelector').val();
-        var selectedSection = $('#sectionSelector').val();
-
-        if (path !== 'home') {
-            relPath = relPath.concat('?');
-            var params = {};
-            if (selectedCourse) {
-                params.course = selectedCourse;
-            }
-            if (selectedSection) {
-                params.section = selectedSection;
-            }
-            relPath = relPath.concat($.param(params));
-        }
-        window.location.href = relPath;
-    }
-</script>
 <ul class="nav nav-sidebar">
-    <li class="sidebar-link"><a href="javascript:sidebarAction('home');">COURSES</a></li>
-    <li class="sidebar-link"><a href="javascript:sidebarAction('students');">STUDENTS</a></li>
+    <li class="sidebar-link"><a dir="courses" href="#">COURSES</a></li>
+    <li class="sidebar-link"><a dir="students" href="#">STUDENTS</a></li>
     <li role="separator" class="divider"></li>
-    <li class="sidebar-link"><a href="javascript:sidebarAction('rounds');">ROUNDS</a></li>
-    <li class="sidebar-link"><a href="javascript:sidebarAction('groups');">GROUPS</a></li>
+    <li class="sidebar-link"><a dir="rounds" href="#">ROUNDS</a></li>
+    <li class="sidebar-link"><a dir="groups" href="#">GROUPS</a></li>
     <li role="separator" class="divider"></li>
-{#    <li class="sidebar-link"><a href="/responses">RESPONSES</a></li>#}
-    <li class="sidebar-link"><a href="javascript:sidebarAction('group_responses');">GROUP RESPONSES</a></li>
-    <li class="sidebar-link"><a href="javascript:sidebarAction('show_responses');">SHOW RESPONSES</a></li>
+{#    <li class="sidebar-link"><a dir="responses" href="#">RESPONSES</a></li>#}
+    <li class="sidebar-link"><a dir="group_responses" href="#">GROUP RESPONSES</a></li>
+    <li class="sidebar-link"><a dir="show_responses" href="#">SHOW RESPONSES</a></li>
 </ul>
+<script type="text/javascript" src="/js/layouts/instructor_base.js"></script>
 {% endblock sidenavbar %}
 {#FIXME: Sidebar overlaps with content on small screens#}
