@@ -341,3 +341,8 @@ a:hover {
     background-color: #110F80;
     margin-bottom: 10px;
 }
+
+/* Dropdown Styling Fixes */
+select {
+    padding: 2px !important;
+}
