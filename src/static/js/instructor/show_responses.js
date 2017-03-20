@@ -206,12 +206,12 @@ function ColChecked(index) {
   }
 }
 
-function ChangeRoundRadio() {
-    var rounds = document.getElementsByName("rounds");
+function ChangeColumnRadio() {
+    var columns = document.getElementsByName("rounds");
     var checked = null;
-    for(var i = 0; i < rounds.length; i++){
-        if(rounds[i].checked){
-            checked = rounds[i];
+    for(var i = 0; i < columns.length; i++){
+        if(columns[i].checked){
+            checked = columns[i];
         }
     }
     if(checked.value === "single"){
@@ -231,7 +231,7 @@ function ChangeTimingRadio() {
     }
     if(checked.value === "round"){
         console.log("Do round stuff");
-    } else if(checked.value === "chrono"){
-        console.log("Do chronological stuff");
+    } else if(checked.value === "forum"){
+        console.log("Do forum stuff");
     }
 }
