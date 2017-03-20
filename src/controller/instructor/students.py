@@ -34,11 +34,7 @@ class Students(webapp2.RequestHandler):
                 Emails (IDs) of students to be added.
 
         """
-
-        print(csv)
         students = csv.split("\n")
-        print(students)
-
 
         # Start by looping over the list of emails supplied
         for student in students:
@@ -48,7 +44,6 @@ class Students(webapp2.RequestHandler):
             lname = student[1]
             email = student[2]
             osu_email = student[3]
-            print(fname, lname, email, osu_email)
 
             # Then make a list of all the emails currently in the section
             student_emails = [s.email for s in section.students]
