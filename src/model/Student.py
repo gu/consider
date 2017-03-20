@@ -17,5 +17,5 @@ class Student(ndb.Model):
     """Student's first name"""
     last_name = ndb.StringProperty(required=False, default="")
     """Student's last name"""
-    alt_email = ndb.StringProperty(required=False, default="")
+    osu_email = ndb.StringProperty(required=False, default="")
     """Student's alt_email name"""

@@ -48,6 +48,7 @@ class Students(webapp2.RequestHandler):
             lname = student[1]
             email = student[2]
             osu_email = student[3]
+            print(fname, lname, email, osu_email)
 
             # Then make a list of all the emails currently in the section
             student_emails = [s.email for s in section.students]
@@ -68,6 +69,9 @@ class Students(webapp2.RequestHandler):
                 # Create a new student and assign the email address
                 student = model.Student(id=email)
                 student.email = email
+                student.first_name = fname
+                student.last_name = lname
+                student.osu_email = osu_email
             # end
             # Now check if the current student is subscribed to this section
             if section.key not in student.sections:
