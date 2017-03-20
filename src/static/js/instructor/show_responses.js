@@ -205,3 +205,33 @@ function ColChecked(index) {
     }
   }
 }
+
+function ChangeRoundRadio() {
+    var rounds = document.getElementsByName("rounds");
+    var checked = null;
+    for(var i = 0; i < rounds.length; i++){
+        if(rounds[i].checked){
+            checked = rounds[i];
+        }
+    }
+    if(checked.value === "single"){
+        console.log("Do single column stuff");
+    } else if(checked.value === "multi"){
+        console.log("Do multi column stuff");
+    }
+}
+
+function ChangeTimingRadio() {
+    var timing = document.getElementsByName("timing");
+    var checked = null;
+    for(var i = 0; i < timing.length; i++){
+        if(timing[i].checked){
+            checked = timing[i];
+        }
+    }
+    if(checked.value === "round"){
+        console.log("Do round stuff");
+    } else if(checked.value === "chrono"){
+        console.log("Do chronological stuff");
+    }
+}
