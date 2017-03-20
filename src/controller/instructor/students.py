@@ -23,7 +23,7 @@ class Students(webapp2.RequestHandler):
     API to add a student to the given section and course.
     """
 
-    def add_students(self, section, emails):
+    def add_students(self, section, csv):
         """
         Adds one or more students to the given section in the datastore.
 
@@ -34,10 +34,21 @@ class Students(webapp2.RequestHandler):
                 Emails (IDs) of students to be added.
 
         """
+
+        print(csv)
+        students = csv.split("\n")
+        print(students)
+
+
         # Start by looping over the list of emails supplied
-        for email in emails:
+        for student in students:
             # Transform the supplied email to lowercase
-            email = email.lower()
+            student = student.split(",")
+            fname = student[0]
+            lname = student[1]
+            email = student[2]
+            osu_email = student[3]
+
             # Then make a list of all the emails currently in the section
             student_emails = [s.email for s in section.students]
             # Check that the supplied email isn't already in the section
@@ -45,6 +56,9 @@ class Students(webapp2.RequestHandler):
                 # And add them to the list of students for the section
                 info = model.StudentInfo()
                 info.email = email
+                info.first_name = fname
+                info.last_name = lname
+                info.osu_email = osu_email
                 section.students.append(info)
             # end
             # Now grab the student from the database
@@ -62,10 +76,13 @@ class Students(webapp2.RequestHandler):
             # end
             # Save the student data back to the database
             student.put()
+
         # end
         # Now save all the section data back to the database and log it
+
         section.put()
         utils.log('Students added to Section ' + str(section), type='Success!')
+
 
     # end add_students
 

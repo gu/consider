@@ -23,19 +23,19 @@ $("#modalForm").submit(function (event) {
 
     //collect form elements
     var $form = $(this),
-            email = $form.find("input[name='email']").val(),
+            email = document.getElementById('student-data').value,
             course = selectedCourse,
             section = selectedSection,
             url = $form.attr("action");
 
-    var emails = email.replace(/ /g, ',').split(/[\n,]+/);
+    //var emails = email.replace(/ /g, ',').split(/[\n,]+/);
     // Allows emails to be space, comma, and newline separated
     
-    bootbox.confirm("Are you sure, you want to add " + emails.length + " student(s)?", function (result) {
+    bootbox.confirm("Are you sure, you want to add " + email.length + " student(s)?", function (result) {
         if (result) {
             // do the POST and get the callback
             $.post(url, {
-                emails: JSON.stringify(emails),
+                emails: JSON.stringify(email),
                 course: course,
                 section: section,
                 action: 'add'
