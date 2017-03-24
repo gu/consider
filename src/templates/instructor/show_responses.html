@@ -47,14 +47,6 @@
 </div>
 <div class="card-body">
 <div class="table-responsive">
-    <div>
-        <form>
-            <input type="radio" name="columns" value="single" checked> single column
-            <input type="radio" name="columns" value="multi"> multi column <br>
-            <input type="radio" name="timing" value="round" checked> rounds
-            <input type="radio" name="timing" value="forum"> forum <br>
-        </form>
-    </div>
     <table class="table table-striped" id="group_table">
       <thead>
         <tr>
@@ -81,8 +73,13 @@
     <div class="form-group" style="text-align:center;">
 
         <button class="label label-success" style="margin-right:60px;width:100px;height:35px;font-size:15px"
-                onclick="exportHtml('{{ selectedCourse }}','{{ selectedSection }}')">
-            HTML
+                onclick="exportSingleColumnHtml('{{ selectedCourse }}','{{ selectedSection }}')">
+            Single Column HTML
+        </button>
+
+        <button class="label label-success" style="margin-right:60px;width:100px;height:35px;font-size:15px"
+                onclick="exportMultiColumnHtml('{{ selectedCourse }}','{{ selectedSection }}')">
+            Multi Column HTML
         </button>
 
         <button class="label label-success" style="width:100px;height:35px;font-size:15px"

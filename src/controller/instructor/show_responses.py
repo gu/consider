@@ -229,8 +229,8 @@ class HtmlExport(webapp2.RequestHandler):
                 flag = False
                 if section.has_rounds:  # TODO Also for last and first round in seq
                     responses = model.Response.query(ancestor=rounds[j - 1].key).fetch()
-                    output_seq_responses = model.SeqResponse.query(ancestor=groups[j].key).order(
-                    model.SeqResponse.index).fetch()
+                    #output_seq_responses = model.SeqResponse.query(ancestor=groups[j].key).order(
+                    #model.SeqResponse.index).fetch()
                     for resp in responses:
                         utils.log('resp = ' + str(resp))
                         if resp.student == students[i].email:
