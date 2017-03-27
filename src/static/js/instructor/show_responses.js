@@ -164,7 +164,7 @@ function exportSingleColumnHtml(course, section) {
         }
         else {
             console.log(12345);
-            location.href = "/data_html_export"
+            location.href = "/data_html_export/single"
         }
     });
 }
@@ -205,7 +205,7 @@ function exportMultiColumnHtml(course, section) {
         }
         else {
             console.log(12345);
-            location.href = "/data_multi_html_export"
+            location.href = "/data_html_export/multi"
         }
     });
 }

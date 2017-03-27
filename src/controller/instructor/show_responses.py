@@ -145,8 +145,8 @@ class DataExport(webapp2.RequestHandler):
 
 
 class HtmlExport(webapp2.RequestHandler):
-    def get(self):
-
+    def get(self, type):
+        print type # TODO: remove after implementation
         instructor_tmp = utils.check_privilege(model.Role.instructor)
         instructor = model.Instructor.get_by_id(instructor_tmp.email)
         course = model.Course.get_by_id(instructor.export_course, parent=instructor.key)

@@ -154,6 +154,5 @@ application = webapp2.WSGIApplication([
     ('/crontask', CronTask),
     ('/show_responses', instructor.ShowResponses),
     ('/data_file_export', instructor.DataExport),
-    ('/data_html_export', instructor.HtmlExport),
-    ('/data_multi_html_export', instructor.HtmlExport),
+    ('/data_html_export/(\w+)', instructor.HtmlExport)
 ], debug=config.DEBUG)
