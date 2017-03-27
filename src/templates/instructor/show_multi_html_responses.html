@@ -1,0 +1,204 @@
+{% extends "layouts/instructor_base.html" %}
+{% block title %} | Responses {% endblock %}
+{% block content %}
+
+{% if not posts %}
+    {% for student in students %}
+        <!-- post initial -->
+
+     <!-- post seuential from student.group -->
+    <!-- for each student ing group -->
+        <!-- post final -->
+
+        <div class="card">
+            <div class="card-title">
+                <h2>({{ loop.index }}) &nbsp;
+                    Student: {{ student.email }} &nbsp;
+                    Alias: {{ student.alias }} &nbsp;
+                    Group: {{ student.group }} &nbsp;</h2>
+            </div> <!-- ./card-title -->
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <tr>
+                        {% for r in seq_rounds[student.email] %}
+                            <th>Round-{{ r }}</th>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for opt in option[student.email] %}
+                            <td>
+                                {%- if opt and opt!='NA' -%}
+                                    <strong>Option: </strong>{{ opt|safe }}
+                                {%- endif -%}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for comment in comments[student.email] %}
+                            <td>
+                                {%- if comment and comment!='NA' -%}
+                                    <strong>Comment: </strong>{{ comment|safe }}
+                                    {% else %}
+                                    <em>Not submitted.</em>
+                                {%- endif -%}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <!-- IF ROUND BASED-->
+                        {% for response in responses[student.email] %}
+                            <td>
+                                {%- if response and response!='NA' -%}
+                                    <strong>Response: </strong>{{ response|safe }}
+
+                                {%- endif -%}
+                             </td>
+                        {% endfor %}
+                        <!-- IF NOT ROUND BASED-->
+                       <td>{{ responses[student.email][0]|safe }}</td>
+                    </tr>
+
+                </table>
+            </div> <!-- ./card-body -->
+        </div> <!-- ./card -->
+        {% endfor %}
+    {% endif %}
+<!--sequential round stuff, only works if you're at round 2 or later-->
+{% if posts %}
+    <!-- -->
+    {% for group in groups %}
+        <!-- initials -->
+        <h3>INITIAL RESPONSES IN GROUP {{ group.number }}</h3>
+
+
+        <div class="card">
+            {% for answer in initial_seq[group.number - 1] %}
+
+                 {% for member in group.members %}
+
+
+                    {% if answer.email == member %}
+                            <div class="card-title">
+                        <h3 style="text-align: left">{{answer.email}} </h3>
+                    </div>
+                     <div class="card-body" style="text-align: left">
+                         {{answer.response|safe}}
+                     </div>
+                {% endif %}
+
+            {% endfor %}
+            {% endfor %}
+        </div>
+
+
+
+
+
+        <!-- post sequentials --> <h3>SEQUENTIAL DISCUSSION IN GROUP {{ group.number }}</h3>
+        <div class="card">
+
+                 {% for p in posts %}
+                     {% for member in group.members %}
+                         {% if p.author ==  member%}
+                             <div class="card-title">
+                        <h3 style="text-align: left">{{p.author}} </h3>
+                    </div>
+                     <div class="card-body" style="text-align: left">
+                         {{p.text|safe}}
+                     </div>
+                         {% endif %}
+                     {% endfor %}
+
+
+
+                 {% endfor %}
+        </div>
+        <!-- final -->
+        <div class="card">
+        <h3> FINAL ANSWERS IN GROUP {{ group.number }} </h3>
+        {% for member in group.members %}
+            {% for response in seq_resp['group_'+group.number|string+'_3'] %}
+                {% if response.student == member %}
+                <div class="card-title">
+                        <h3 style="text-align: left">{{response.student}} </h3>
+                    </div>
+
+
+                    <div class="card-body" style="text-align: left">
+                         {{response.comment|safe}}
+                     </div>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+        </div>
+
+        <!--  summary -->
+        <div class="card">
+        <h3> SUMMARIES IN GROUP {{ group.number }} </h3>
+        {% for member in group.members %}
+            {% for response in seq_resp['group_'+group.number|string+'_3'] %}
+                {% if response.student == member %}
+                <div class="card-title">
+                        <h3 style="text-align: left">{{response.student}} </h3>
+                    </div>
+
+                     <div class="card-body" style="text-align: left">
+                         {{response.summary|safe}}
+                     </div>
+
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+        </div>
+
+
+    {% endfor %}
+{% endif %}
+
+
+
+
+
+
+
+
+
+{#<!--
+{% for student in students %}
+        <!-- post initial -->
+
+     <!-- post sequential from student.group -->
+    <!-- for each student ing group -->
+        <!-- post final -->
+
+        <div class="card">
+            <div class="card-title">
+                <h2>({{ loop.index }}) &nbsp;
+                    Student: {{ student.email }} &nbsp;
+                    Alias: {{ student.alias }} &nbsp;
+                    Group: {{ student.group }} &nbsp;</h2>
+            </div> <!-- ./card-title -->
+            <div class="card-body">
+                <table class="table table-bordered">
+
+                    <tr><!-- IF NOT ROUND BASE, FINAL SUBMISSION -->
+                         <td>{{ responses[student.email][1]|safe }}</td>
+                    </tr>
+                </table>
+            </div> <!-- ./card-body -->
+        </div> <!-- ./card -->
+{% endfor %}-->#}
+{% endblock %}
+
+<!--  UNIQUE GROUP1 -->
+    <!-- SELECTED STUDENT'S INITIAL SUBMISSION -->
+
+    <!-- SEQ DISCUSSION FOR ENTIRE GROUP-->
+
+    <!-- SELECTED STUDENT"S FINAL SUBMISSION -->
+<!--  UNIQUE GROUP2 -->
+<!--  ...... -->
+
+
+{#TODO Make this responsive#}
+{#TODO Better styling#}

@@ -155,4 +155,5 @@ application = webapp2.WSGIApplication([
     ('/show_responses', instructor.ShowResponses),
     ('/data_file_export', instructor.DataExport),
     ('/data_html_export', instructor.HtmlExport),
+    ('/data_multi_html_export', instructor.HtmlExport),
 ], debug=config.DEBUG)

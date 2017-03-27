@@ -229,8 +229,11 @@ class HtmlExport(webapp2.RequestHandler):
                 flag = False
                 if section.has_rounds:  # TODO Also for last and first round in seq
                     responses = model.Response.query(ancestor=rounds[j - 1].key).fetch()
-                    #output_seq_responses = model.SeqResponse.query(ancestor=groups[j].key).order(
-                    #model.SeqResponse.index).fetch()
+                    """
+                    Unused variable from previous group(s)
+                    output_seq_responses = model.SeqResponse.query(ancestor=groups[j].key).order(
+                    model.SeqResponse.index).fetch()
+                    """
                     for resp in responses:
                         utils.log('resp = ' + str(resp))
                         if resp.student == students[i].email:
@@ -381,5 +384,6 @@ class HtmlExport(webapp2.RequestHandler):
         template_values['responses'] = output_responses
         template_values['option'] = output_options
         template_values['summary'] = output_summary
+        #Can I have an if statement here? -Alex T
         template = utils.jinja_env().get_template('instructor/show_html_responses.html')
         self.response.write(template.render(template_values))
