@@ -146,6 +146,11 @@ class Students(webapp2.RequestHandler):
                 emails = json.loads(self.request.get('emails'))
                 # And create new students from that list
                 self.add_students(section, emails)
+            elif action == 'addCSV':
+                # Grab a list of the emails from the page
+                emails = json.loads(self.request.get('emails'))
+                # And create new students from the list
+                self.add_studentsCSV(section, emails)
             elif action == 'remove':
                 # Grab the email from the page to remove
                 email = self.request.get('email').lower()
