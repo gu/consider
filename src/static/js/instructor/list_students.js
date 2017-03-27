@@ -40,7 +40,7 @@ $("#modalForm").submit(function (event) {
                 if (result) {
                     // do the POST and get the callback
                     $.post(url, {
-                        emails: JSON.stringify(email),
+                        emails: JSON.stringify(emails),
                         course: course,
                         section: section,
                         action: 'add'
