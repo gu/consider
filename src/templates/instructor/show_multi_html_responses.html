@@ -54,43 +54,22 @@
         </div> <!-- ./card-body -->
     </div> <!-- ./card -->
     <!-- Rounds -->
-    {% for round in seq_rounds %}
+    {% for i in seq_rounds[groups[0].members[0]] %}
         <div class="card">
-            <div class="card-title">
-                <h2> Round {{ round }} </h2>
-            </div> <!-- ./card-title -->
-            <div class="card-body">
-                <table class="table table-bordered">
-                    <tr>
-                        {% for student in students %}
-                            <th>{{ student.email }}({{ student.alias }} Group {{ student.group }})</th>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        {% for student in students %}
-                            <td>
-                                {% for s in initial_seq[student.group - 1] %}
-                                    {% if s.email == student.email %}
-                                        <strong>Option:</strong> {{ s.option }}
-                                    {% endif %}
-                                {% endfor %}
-                            </td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        {% for student in students %}
-                            <td>
-                                {% for s in initial_seq[student.group - 1] %}
-                                    {% if s.email == student.email %}
-                                        <strong>Response:</strong> {{ s.response }}
-                                    {% endif %}
-                                {% endfor %}
-                            </td>
-                        {% endfor %}
-                    </tr>
-                </table>
-            </div> <!-- ./card-body -->
-        </div> <!-- ./card -->
+        <div class="card-title">
+            <h2> Round {{ i }} </h2>
+        </div> <!-- ./card-title -->
+        <div class="card-body">
+            <table class="table table-bordered">
+                <tr>
+                    {% for student in students %}
+                        <th>{{ student.email }}({{ student.alias }} Group {{ student.group }})</th>
+                    {% endfor %}
+                </tr>
+
+            </table>
+        </div> <!-- ./card-body -->
+    </div> <!-- ./card -->
     {% endfor %}
 {% endif %}
 <!--sequential round stuff, only works if you're at round 2 or later-->
