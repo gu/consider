@@ -384,9 +384,11 @@ class HtmlExport(webapp2.RequestHandler):
         template_values['responses'] = output_responses
         template_values['option'] = output_options
         template_values['summary'] = output_summary
-        #Need a real condition, or separate into separate classes -Alex T
-        if False:
+        #Wrote it this way to show all values of type, may want a default page -Alex T
+        if type == "single":
             template = utils.jinja_env().get_template('instructor/show_html_responses.html')
-        else:
+        elif type == "multi":
             template = utils.jinja_env().get_template('instructor/show_multi_html_responses.html')
+        else:
+            template = utils.jinja_env().get_template('instructor/show_html_responses.html')
         self.response.write(template.render(template_values))

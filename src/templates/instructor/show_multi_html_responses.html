@@ -54,10 +54,36 @@
         </div> <!-- ./card-body -->
     </div> <!-- ./card -->
     <!-- Rounds -->
+    <!-- There has to be a better, more reliable way to get this number-->
     {% for i in seq_rounds[groups[0].members[0]] %}
-        <div class="card">
+        {% if i != 1 %}
+            <div class="card">
+                <div class="card-title">
+                    <h2> Round {{ i - 1 }} </h2>
+                </div> <!-- ./card-title -->
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <tr>
+                            {% for student in students %}
+                                <th>{{ student.email }}({{ student.alias }} Group {{ student.group }})</th>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            {% for student in students %}
+                                <td>
+                                    {{ comments[student.email][i-1] }}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    </table>
+                </div> <!-- ./card-body -->
+            </div> <!-- ./card -->
+        {% endif %}
+    {% endfor %}
+    <!-- Final Submissions -->
+    <div class="card">
         <div class="card-title">
-            <h2> Round {{ i }} </h2>
+            <h2> Final Submissions </h2>
         </div> <!-- ./card-title -->
         <div class="card-body">
             <table class="table table-bordered">
@@ -66,11 +92,68 @@
                         <th>{{ student.email }}({{ student.alias }} Group {{ student.group }})</th>
                     {% endfor %}
                 </tr>
-
+                <tr>
+                    {% for student in students %}
+                        <td>
+                            {% for s in final_answers[student.group - 1] %}
+                                {% if s.email == student.email %}
+                                    <strong>Option:</strong> {{ s.option }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for student in students %}
+                        <td>
+                            {% for s in final_answers[student.group - 1] %}
+                                {% if s.email == student.email %}
+                                    <strong>Response:</strong> {{ s.response }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    {% endfor %}
+                </tr>
             </table>
         </div> <!-- ./card-body -->
     </div> <!-- ./card -->
-    {% endfor %}
+    <!-- Summaries -->
+    <div class="card">
+        <div class="card-title">
+            <h2> Summary Submissions </h2>
+        </div> <!-- ./card-title -->
+        <div class="card-body">
+            <table class="table table-bordered">
+                <tr>
+                    {% for student in students %}
+                        <th>{{ student.email }}({{ student.alias }} Group {{ student.group }})</th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for student in students %}
+                        <td>
+                            {% for s in final_answers[student.group - 1] %}
+                                {% if s.email == student.email %}
+                                    <strong>Option:</strong> {{ s.option }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for student in students %}
+                        <td>
+                            {% for s in final_answers[student.group - 1] %}
+                                {% if s.email == student.email %}
+                                    <strong>Response:</strong> {{ s.response }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            </table>
+        </div> <!-- ./card-body -->
+    </div> <!-- ./card -->
 {% endif %}
 <!--sequential round stuff, only works if you're at round 2 or later-->
 {% if posts %}
