@@ -76,7 +76,9 @@ understanding of the code for graders.
         <thead>
         <tr>
             <th>#</th>
-            <th>Email</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Gmail Address</th>
             <th>Delete</th>
         </tr>
         </thead>
@@ -84,6 +86,8 @@ understanding of the code for graders.
         {% for student in students %}
         <tr>
             <td>{{loop.index}}</td>
+            <td>{{student.first_name}}</td>
+            <td>{{student.last_name}}</td>
             <td>{{student.email}}</td>
             <td>
                 <button class="btn btn-danger btn-sm" onclick="deleteStudent('{{student.email}}')">Delete</button>
@@ -145,20 +149,31 @@ understanding of the code for graders.
                     {{selectedCourse}}</h4>
             </div>
             <div class="modal-body">
-                <h5>Add emails of students separated by commas, spaces, or newlines:</h5>
-
                 <form class="form-horizontal" id="modalForm" method="post" style="margin-top: 20px;text-align: center;"
                       action="/students">
-                    <div class="form-group">
+                    <div class="form-group" id ="info">
                         <label for="inputEmail" class="col-sm-2 control-label">Email(s)</label>
-
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="inputEmail" placeholder="Email(s)" name="email"
-                                   required="true">
+                            <input type="text" class="form-control" id="inputEmail" name="email">
+                        </div>
+                    </div>
+                    <div class="form-group" id="infoCSV">
+                        <h5>Please add text of the form: {First Name, Last Name, Gmail, OSU Email}:</h5>
+                        <label for="student-data" class="col-sm-2 control-label">CSV String</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" id="student-data"></textarea>
                         </div>
                     </div>
                     <button type="submit" class="hide"></button>
                 </form>
+
+
+                <form  class="form-horizontal" id="modalForm" method="post" style="margin-top: 20px; text-align: center;"
+                      action="/students">
+
+                    <button type="submit" class="hide"></button>
+                </form>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
