@@ -351,3 +351,16 @@ textarea {
 select {
     padding: 2px !important;
 }
+
+/*Instructor Show Responses Export button sizing*/
+#singleHTML {
+    width: 200px !important;
+}
+
+#multiHTML {
+    width: 200px !important;
+}
+
+#fileHTML {
+    width:200px !important;
+}

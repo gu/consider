@@ -1,4 +1,5 @@
 import csv
+from tabulate import tabulate
 
 import webapp2
 from google.appengine.api import users
@@ -144,8 +145,8 @@ class DataExport(webapp2.RequestHandler):
 
 
 class HtmlExport(webapp2.RequestHandler):
-    def get(self):
-
+    def get(self, type):
+        print type # TODO: remove after implementation
         instructor_tmp = utils.check_privilege(model.Role.instructor)
         instructor = model.Instructor.get_by_id(instructor_tmp.email)
         course = model.Course.get_by_id(instructor.export_course, parent=instructor.key)
@@ -228,8 +229,11 @@ class HtmlExport(webapp2.RequestHandler):
                 flag = False
                 if section.has_rounds:  # TODO Also for last and first round in seq
                     responses = model.Response.query(ancestor=rounds[j - 1].key).fetch()
+                    """
+                    Unused variable from previous group(s)
                     output_seq_responses = model.SeqResponse.query(ancestor=groups[j].key).order(
                     model.SeqResponse.index).fetch()
+                    """
                     for resp in responses:
                         utils.log('resp = ' + str(resp))
                         if resp.student == students[i].email:
@@ -380,5 +384,11 @@ class HtmlExport(webapp2.RequestHandler):
         template_values['responses'] = output_responses
         template_values['option'] = output_options
         template_values['summary'] = output_summary
-        template = utils.jinja_env().get_template('instructor/show_html_responses.html')
+        #Wrote it this way to show all values of type, may want a default page -Alex T
+        if type == "single":
+            template = utils.jinja_env().get_template('instructor/show_html_responses.html')
+        elif type == "multi":
+            template = utils.jinja_env().get_template('instructor/show_multi_html_responses.html')
+        else:
+            template = utils.jinja_env().get_template('instructor/show_html_responses.html')
         self.response.write(template.render(template_values))

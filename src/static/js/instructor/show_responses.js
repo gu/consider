@@ -128,7 +128,7 @@ function exportData(course, section) {
     });
 }
 
-function exportHtml(course, section) {
+function exportSingleColumnHtml(course, section) {
   var students = $('#show-responses').data().students;
   var indicesOfEmailStart = getIndicesOf("email=u", students);
   emails = [];
@@ -164,7 +164,48 @@ function exportHtml(course, section) {
         }
         else {
             console.log(12345);
-            location.href = "/data_html_export"
+            location.href = "/data_html_export/single"
+        }
+    });
+}
+
+function exportMultiColumnHtml(course, section) {
+  var students = $('#show-responses').data().students;
+  var indicesOfEmailStart = getIndicesOf("email=u", students);
+  emails = [];
+  for (var i = 0; i < indicesOfEmailStart.length; i++)
+  {
+    var indicesOfEmailEnd = students.indexOf("'", indicesOfEmailStart[i] + 8);
+    emails.push(students.substring(indicesOfEmailStart[i] + 8, indicesOfEmailEnd))
+  }
+  // Gather student emails
+
+    var selector = "";
+    var i=0;
+    if (rounds > 0 && students.length > 0)
+    {
+      for (var k = 0; k < emails.length; k++)
+      {
+        for (var j=1; j<= rounds; j++) {
+            var id="{{ student.email}}";
+            if(document.getElementById(emails[k].concat(j)).checked){
+                //var num=i*{{ rounds }}+j;
+                //console.log(num);
+                selector=selector.concat((i.toString()+' ').concat(j.toString()+' '))+' ';
+            }
+        }
+        i=i+1;
+      }
+    }
+    $.post("/data_file_export", {course: course, section: section, action:selector}, function (data) {
+        console.log(123);
+        if (data.charAt(0) == 'E') {
+            console.log(1234);
+            bootbox.alert(data.substring(1));
+        }
+        else {
+            console.log(12345);
+            location.href = "/data_html_export/multi"
         }
     });
 }
@@ -205,3 +246,4 @@ function ColChecked(index) {
     }
   }
 }
+
