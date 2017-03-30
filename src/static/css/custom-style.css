@@ -335,6 +335,11 @@ a:hover {
     padding-right: 15px;
 }
 
+textarea {
+    width: 100%;
+    height: 100%;
+}
+
 /* Badge styling for thumbs up */
 .badge {
     font-weight: 100;

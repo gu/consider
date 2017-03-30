@@ -7,7 +7,13 @@ class StudentInfo(ndb.Model):
 
     An object to represent a student's information in the datastore.
     """
+
+    first_name = ndb.StringProperty()
+    last_name = ndb.StringProperty()
     email = ndb.StringProperty(required=True)
+    osu_email = ndb.StringProperty()
+
+
     """ String. Must be non-empty and unique. """
     alias = ndb.StringProperty(default='NA', indexed=False)
     """ String. Identifies a student within a discussion round. Takes values S1, S2, etc. """

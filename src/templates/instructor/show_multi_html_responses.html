@@ -20,7 +20,11 @@
                     <table class="table table-bordered">
                         <tr>
                             {% for student in students %}
-                                <th>{{ student.email }}({{ student.alias }} Group {{ student.group }})</th>
+                                <th>
+                                    {{ student.first_name }} {{ student.last_name }} <br>
+                                    Alias: {{ student.alias }} Group {{ student.group }} <br>
+                                    Email: {{ student.email }}
+                                </th>
                             {% endfor %}
                         </tr>
                         {% if i == 1 or i == seq_rounds[groups[0].members[0]][-1] %}
@@ -65,7 +69,11 @@
             <table class="table table-bordered">
                 <tr>
                     {% for student in students %}
-                        <th>{{ student.email }}({{ student.alias }} Group {{ student.group }})</th>
+                        <th>
+                            {{ student.first_name }} {{ student.last_name }} <br>
+                            Alias: {{ student.alias }} Group {{ student.group }} <br>
+                            Email: {{ student.email }}
+                        </th>
                     {% endfor %}
                 </tr>
                 <tr>

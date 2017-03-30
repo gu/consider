@@ -23,32 +23,78 @@ $("#modalForm").submit(function (event) {
 
     //collect form elements
     var $form = $(this),
-            email = $form.find("input[name='email']").val(),
+            data = document.getElementById('student-data').value,
+            email = document.getElementById('inputEmail').value,
             course = selectedCourse,
             section = selectedSection,
             url = $form.attr("action");
 
     var emails = email.replace(/ /g, ',').split(/[\n,]+/);
     // Allows emails to be space, comma, and newline separated
-    
-    bootbox.confirm("Are you sure, you want to add " + emails.length + " student(s)?", function (result) {
-        if (result) {
-            // do the POST and get the callback
-            $.post(url, {
-                emails: JSON.stringify(emails),
-                course: course,
-                section: section,
-                action: 'add'
-            }, function (data) {
-                if (data.charAt(0) == 'E') {
-                    bootbox.alert(data.substring(1));
+
+    if(email != "") {
+        email = email.split(",");
+    }
+
+    if(document.getElementById('student-data').value != "" || document.getElementById('inputEmail').value != "") {
+        bootbox.confirm("Are you sure, you want to add " + (email.length + (((data.split(",").length) - 1) / 3)) + " student(s)?", function (result) {
+            if(email != "" && data != "") {
+                if (result) {
+                    // do the POST and get the callback
+                    $.post(url, {
+                        emails: JSON.stringify(emails),
+                        csv: JSON.stringify(data),
+                        course: course,
+                        section: section,
+                        action: 'addBoth'
+                    }, function (data) {
+                        if (data.charAt(0) == 'E') {
+                            bootbox.alert(data.substring(1));
+                        }
+                        else {
+                            location.reload();
+                        }
+                    });
                 }
-                else {
-                    location.reload();
+            }
+            else if(email != "") {
+                if (result) {
+                    // do the POST and get the callback
+                    $.post(url, {
+                        emails: JSON.stringify(emails),
+                        course: course,
+                        section: section,
+                        action: 'add'
+                    }, function (data) {
+                        if (data.charAt(0) == 'E') {
+                            bootbox.alert(data.substring(1));
+                        }
+                        else {
+                            location.reload();
+                        }
+                    });
                 }
-            });
-        }
-    });
+            }
+            else if(data != "") {
+                if (result) {
+                    // do the POST and get the callback
+                    $.post(url, {
+                        emails: JSON.stringify(data),
+                        course: course,
+                        section: section,
+                        action: 'addCSV'
+                    }, function (data) {
+                        if (data.charAt(0) == 'E') {
+                            bootbox.alert(data.substring(1));
+                        }
+                        else {
+                            location.reload();
+                        }
+                    });
+                }
+            }
+        });
+    }
 });
 
 function deleteStudent(student) {

@@ -229,6 +229,10 @@ def addStudents(emails,course,section):
     data = {"emails":str(emails).replace("'",'"'),"course":course,"section":section,"action":"add"}
     return students_post(data)
 
+def addStudentsCSV(csv,course,section):
+    data = {"csv":str(csv).replace("'",'"'),"course":course,"section":section,"action":"addCSV"}
+    return students_post(data)
+
 def removeStudent(email):
     data = {"email":email,"action":"remove"}
     return students_post(data)
@@ -529,7 +533,9 @@ try:
     if (get_section_count("test-instructor@gmail.com")==1):
         print("test-section created successfully")
     students = ["test-student@gmail.com","test-student2@gmail.com"]
+    studentsCSV = ["TEST,S10,test-student10@gmail.com,test-student10@osu.edu\nTEST,S11,test-student11@gmail.com,test-student11@osu.edu"]
     addStudents(students,"TEST-COURSE","TEST-SECTION")
+    addStudentsCSV(studentsCSV,"TEST-COURSE","TEST-SECTION")
     if (get_total_student_count()>0):
         print("test-student created successfully")
 
@@ -598,6 +604,8 @@ try:
     startcount = get_total_student_count()
     students = ["test-student3@gmail.com","test-student4@gmail.com"]
     addStudents(students,"TEST-COURSE","TEST-SECTION")
+    studentsCSV = ["TEST,S12,test-student12@gmail.com,test-student12@osu.edu\nTEST,S13,test-student13@gmail.com,test-student13@osu.edu"]
+    addStudentsCSV(studentsCSV,"TEST-COURSE","TEST-SECTION")
     aftercount = get_total_student_count()
     if(aftercount - startcount == 2):
         print_passed(test_number)
@@ -610,6 +618,8 @@ try:
     startcount = get_total_student_count()
     students = ["test-student5@gmail.com","test-student6@gmail.com"]
     addStudents(students,"TEST-COURSE","TEST-SECTION")
+    studentsCSV = ["TEST,S14,test-student14@gmail.com,test-student14@osu.edu\nTEST,S15,test-student15@gmail.com,test-student15@osu.edu"]
+    addStudentsCSV(studentsCSV,"TEST-COURSE","TEST-SECTION")
     aftercount = get_total_student_count()
     if(aftercount != startcount):
         print_failed(test_number,"permissions error: student was able to add students")
@@ -622,6 +632,8 @@ try:
     login("test-instructor@gmail.com",False)
     startcount = get_total_student_count()
     students = ["test-student3@gmail.com","test-student4@gmail.com"]
+    studentsCSV = ["TEST,S13,test-student13@gmail.com,test-student13@osu.edu\nTEST,S14,test-student14@gmail.com,test-student14@osu.edu"]
+    addStudentsCSV(studentsCSV,"TEST-COURSE","TEST-SECTION")
     addStudents(students,"TEST-COURSE","TEST-SECTION")
     aftercount = get_total_student_count()
     if(aftercount == startcount):
@@ -636,6 +648,9 @@ try:
     startcount = get_total_student_count()
     students = ["test-student7@gmail.com","test-student7@gmail.com"]
     addStudents(students,"TEST-COURSE","TEST-SECTION")
+    studentsCSV = ["TEST,S17,test-student17@gmail.com,test-student17@osu.edu\nTEST,S17,test-student17@gmail.com,test-student17@osu.edu"]
+    addStudentsCSV(studentsCSV,"TEST-COURSE","TEST-SECTION")
+
     aftercount = get_total_student_count()
     #check greater than 1 because we should only add 1 or 0
     if(aftercount - startcount > 1):
