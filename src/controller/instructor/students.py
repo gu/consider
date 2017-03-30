@@ -128,6 +128,94 @@ class Students(webapp2.RequestHandler):
         section.put()
         utils.log('Students added to Section ' + str(section), type='Success!')
 
+    def add_studentsBoth(self, section, emails, csv):
+        """
+        Adds one or more students to the given section in the datastore.
+
+        Args:
+            section (object):
+                Section to which the studetns are to be added.
+            emails (list):
+                Emails (IDs) of students to be added.
+
+        """
+        for email in emails:
+            # Transform the supplied email to lowercase
+            email = email.lower()
+            # Then make a list of all the emails currently in the section
+            student_emails = [s.email for s in section.students]
+            # Check that the supplied email isn't already in the section
+            if email not in student_emails:
+                # And add them to the list of students for the section
+                info = model.StudentInfo()
+                info.email = email
+                section.students.append(info)
+            # end
+            # Now grab the student from the database
+            student = model.Student.get_by_id(email)
+            # And if they don't already have a db entry
+            if not student:
+                # Create a new student and assign the email address
+                student = model.Student(id=email)
+                student.email = email
+            # end
+            # Now check if the current student is subscribed to this section
+            if section.key not in student.sections:
+                # And add them if they weren't already
+                student.sections.append(section.key)
+            # end
+            # Save the student data back to the database
+            student.put()
+        # end
+        # Now save all the section data back to the database and log it
+
+        students = csv.split("\n")
+
+        # Start by looping over the list of emails supplied
+        for student in students:
+            # Transform the supplied email to lowercase
+            student = student.split(",")
+            fname = student[0]
+            lname = student[1]
+            email = student[2]
+            osu_email = student[3]
+
+            # Then make a list of all the emails currently in the section
+            student_emails = [s.email for s in section.students]
+            # Check that the supplied email isn't already in the section
+            if email not in student_emails:
+                # And add them to the list of students for the section
+                info = model.StudentInfo()
+                info.email = email
+                info.first_name = fname
+                info.last_name = lname
+                info.osu_email = osu_email
+                section.students.append(info)
+            # end
+            # Now grab the student from the database
+            student = model.Student.get_by_id(email)
+            # And if they don't already have a db entry
+            if not student:
+                # Create a new student and assign the email address
+                student = model.Student(id=email)
+                student.email = email
+                student.first_name = fname
+                student.last_name = lname
+                student.osu_email = osu_email
+            # end
+            # Now check if the current student is subscribed to this section
+            if section.key not in student.sections:
+                # And add them if they weren't already
+                student.sections.append(section.key)
+            # end
+            # Save the student data back to the database
+            student.put()
+
+        # end
+        # Now save all the section data back to the database and log it
+
+        section.put()
+        utils.log('Students added to Section ' + str(section), type='Success!')
 
     # end add_students
 
@@ -197,6 +285,12 @@ class Students(webapp2.RequestHandler):
                 emails = json.loads(self.request.get('emails'))
                 # And create new students from the list
                 self.add_studentsCSV(section, emails)
+            elif action == 'addBoth':
+                # Grab a list of the emails from the page
+                emails = json.loads(self.request.get('emails'))
+                csv = json.loads(self.request.get('csv'))
+                # And create new students from the list
+                self.add_studentsBoth(section, emails, csv)
             elif action == 'remove':
                 # Grab the email from the page to remove
                 email = self.request.get('email').lower()

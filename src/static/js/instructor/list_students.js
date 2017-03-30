@@ -38,7 +38,26 @@ $("#modalForm").submit(function (event) {
 
     if(document.getElementById('student-data').value != "" || document.getElementById('inputEmail').value != "") {
         bootbox.confirm("Are you sure, you want to add " + (email.length + (((data.split(",").length) - 1) / 3)) + " student(s)?", function (result) {
-            if(email != "") {
+            if(email != "" && data != "") {
+                if (result) {
+                    // do the POST and get the callback
+                    $.post(url, {
+                        emails: JSON.stringify(emails),
+                        csv: JSON.stringify(data),
+                        course: course,
+                        section: section,
+                        action: 'addBoth'
+                    }, function (data) {
+                        if (data.charAt(0) == 'E') {
+                            bootbox.alert(data.substring(1));
+                        }
+                        else {
+                            location.reload();
+                        }
+                    });
+                }
+            }
+            else if(email != "") {
                 if (result) {
                     // do the POST and get the callback
                     $.post(url, {
@@ -56,7 +75,7 @@ $("#modalForm").submit(function (event) {
                     });
                 }
             }
-            if(data != "") {
+            else if(data != "") {
                 if (result) {
                     // do the POST and get the callback
                     $.post(url, {
