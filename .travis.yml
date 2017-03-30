@@ -1,6 +1,11 @@
 language: python
+os: osx
 python:
  - "2.7"
+before_script:
+ - wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-149.0.0-darwin-x86.tar.gz
+ - tar -zxvf google-cloud-sdk-149.0.0-darwin-x86.tar.gz
+ - gcloud components install app-engine-python
 install:
  - pip install -r requirements.txt
  - pip install -t lib -r requirements-lib.txt
