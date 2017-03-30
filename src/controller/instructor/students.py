@@ -36,7 +36,6 @@ class Students(webapp2.RequestHandler):
         """
         # Start by looping over the list of emails supplied
         for email in emails:
-            print(email)
             # Transform the supplied email to lowercase
             email = email.lower()
             # Then make a list of all the emails currently in the section

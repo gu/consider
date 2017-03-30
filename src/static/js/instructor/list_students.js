@@ -32,11 +32,13 @@ $("#modalForm").submit(function (event) {
     var emails = email.replace(/ /g, ',').split(/[\n,]+/);
     // Allows emails to be space, comma, and newline separated
 
-
+    if(email != "") {
+        email = email.split(",");
+    }
 
     if(document.getElementById('student-data').value != "" || document.getElementById('inputEmail').value != "") {
-        bootbox.confirm("Are you sure, you want to add " + (email.split(",").length + (((data.split(",").length) - 1) / 3)) + " student(s)?", function (result) {
-            if(email != "" && email != "Email(s)") {
+        bootbox.confirm("Are you sure, you want to add " + (email.length + (((data.split(",").length) - 1) / 3)) + " student(s)?", function (result) {
+            if(email != "") {
                 if (result) {
                     // do the POST and get the callback
                     $.post(url, {
