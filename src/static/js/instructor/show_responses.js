@@ -33,11 +33,11 @@ function SelectAll() {
     var count = 0;
     var emails = [];
 
-    var indicesOfEmailStart = getIndicesOf("email=u", students);
+    var indicesOfEmailStart = getIndicesOf(" email=u", students);
     for (var i = 0; i < indicesOfEmailStart.length; i++)
     {
-      var indicesOfEmailEnd = students.indexOf("'", indicesOfEmailStart[i] + 8);
-      emails.push(students.substring(indicesOfEmailStart[i] + 8, indicesOfEmailEnd))
+      var indicesOfEmailEnd = students.indexOf("'", indicesOfEmailStart[i] + 9);
+      emails.push(students.substring(indicesOfEmailStart[i] + 9, indicesOfEmailEnd))
     }
 
     for (var i = 0; i < emails.length; i++)
@@ -94,12 +94,12 @@ function RowChecked(student, rounds) {
 
 function exportData(course, section) {
     var students = $('#show-responses').data().students;
-    var indicesOfEmailStart = getIndicesOf("email=u", students);
+    var indicesOfEmailStart = getIndicesOf(" email=u", students);
     emails = [];
     for (var i = 0; i < indicesOfEmailStart.length; i++)
     {
-      var indicesOfEmailEnd = students.indexOf("'", indicesOfEmailStart[i] + 8);
-      emails.push(students.substring(indicesOfEmailStart[i] + 8, indicesOfEmailEnd))
+      var indicesOfEmailEnd = students.indexOf("'", indicesOfEmailStart[i] + 9);
+      emails.push(students.substring(indicesOfEmailStart[i] + 9, indicesOfEmailEnd))
     }
     // Gather student emails
     var selector = "";
@@ -130,12 +130,12 @@ function exportData(course, section) {
 
 function exportSingleColumnHtml(course, section) {
   var students = $('#show-responses').data().students;
-  var indicesOfEmailStart = getIndicesOf("email=u", students);
+  var indicesOfEmailStart = getIndicesOf(" email=u", students);
   emails = [];
   for (var i = 0; i < indicesOfEmailStart.length; i++)
   {
-    var indicesOfEmailEnd = students.indexOf("'", indicesOfEmailStart[i] + 8);
-    emails.push(students.substring(indicesOfEmailStart[i] + 8, indicesOfEmailEnd))
+    var indicesOfEmailEnd = students.indexOf("'", indicesOfEmailStart[i] + 9);
+    emails.push(students.substring(indicesOfEmailStart[i] + 9, indicesOfEmailEnd))
   }
   // Gather student emails
 
@@ -171,12 +171,12 @@ function exportSingleColumnHtml(course, section) {
 
 function exportMultiColumnHtml(course, section) {
   var students = $('#show-responses').data().students;
-  var indicesOfEmailStart = getIndicesOf("email=u", students);
+  var indicesOfEmailStart = getIndicesOf(" email=u", students);
   emails = [];
   for (var i = 0; i < indicesOfEmailStart.length; i++)
   {
-    var indicesOfEmailEnd = students.indexOf("'", indicesOfEmailStart[i] + 8);
-    emails.push(students.substring(indicesOfEmailStart[i] + 8, indicesOfEmailEnd))
+    var indicesOfEmailEnd = students.indexOf("'", indicesOfEmailStart[i] + 9);
+    emails.push(students.substring(indicesOfEmailStart[i] + 9, indicesOfEmailEnd))
   }
   // Gather student emails
 
@@ -212,12 +212,12 @@ function exportMultiColumnHtml(course, section) {
 
 function ColChecked(index) {
   var students = $('#show-responses').data().students;
-  var indicesOfEmailStart = getIndicesOf("email=u", students);
+  var indicesOfEmailStart = getIndicesOf(" email=u", students);
   emails = [];
   for (var i = 0; i < indicesOfEmailStart.length; i++)
   {
-    var indicesOfEmailEnd = students.indexOf("'", indicesOfEmailStart[i] + 8);
-    emails.push(students.substring(indicesOfEmailStart[i] + 8, indicesOfEmailEnd))
+    var indicesOfEmailEnd = students.indexOf("'", indicesOfEmailStart[i] + 9);
+    emails.push(students.substring(indicesOfEmailStart[i] + 9, indicesOfEmailEnd))
   }
   // Gather student emails
 
