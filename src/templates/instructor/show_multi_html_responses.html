@@ -103,7 +103,13 @@
 
                     {% if answer.email == member %}
                             <div class="card-title">
-                        <h3 style="text-align: left">{{answer.email}} </h3>
+                        <h3 style="text-align: left">
+                            {% for student in students %}
+                                {% if answer.email == student.email %}
+                                    {{ student.first_name }} {{ student.last_name }} Email: {{ student.email }}
+                                {% endif %}
+                            {% endfor %}
+                        </h3>
                     </div>
                      <div class="card-body" style="text-align: left">
                          {{answer.response|safe}}
@@ -125,7 +131,13 @@
                      {% for member in group.members %}
                          {% if p.author ==  member%}
                              <div class="card-title">
-                        <h3 style="text-align: left">{{p.author}} </h3>
+                        <h3 style="text-align: left">
+                            {% for student in students %}
+                                {% if p.author == student.email %}
+                                    {{ student.first_name }} {{ student.last_name }} Email: {{ student.email }}
+                                {% endif %}
+                            {% endfor %}
+                        </h3>
                     </div>
                      <div class="card-body" style="text-align: left">
                          {{p.text|safe}}
@@ -144,7 +156,13 @@
             {% for response in seq_resp['group_'+group.number|string+'_3'] %}
                 {% if response.student == member %}
                 <div class="card-title">
-                        <h3 style="text-align: left">{{response.student}} </h3>
+                        <h3 style="text-align: left">
+                            {% for student in students %}
+                                {% if response.student == student.email %}
+                                    {{ student.first_name }} {{ student.last_name }} Email: {{ student.email }}
+                                {% endif %}
+                            {% endfor %}
+                        </h3>
                     </div>
 
 
@@ -163,7 +181,13 @@
             {% for response in seq_resp['group_'+group.number|string+'_3'] %}
                 {% if response.student == member %}
                 <div class="card-title">
-                        <h3 style="text-align: left">{{response.student}} </h3>
+                        <h3 style="text-align: left">
+                            {% for student in students %}
+                                {% if response.student == student.email %}
+                                    {{ student.first_name }} {{ student.last_name }} Email: {{ student.email }}
+                                {% endif %}
+                            {% endfor %}
+                        </h3>
                     </div>
 
                      <div class="card-body" style="text-align: left">
