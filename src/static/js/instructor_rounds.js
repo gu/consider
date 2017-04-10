@@ -50,6 +50,10 @@ $(document).ready(function () {
         $("#editEmailForm").find('[type="submit"]').trigger('click');
     });
 
+    $('#previewRounds').click(function () {
+        $("#previewModalForm").find('[type="submit"]').trigger('click');
+    });
+
     $('.close').click(function () {
         $(this).parent().hide();
     });
@@ -463,6 +467,11 @@ $(document).ready(function () {
                 }
             }
         );
+    });
+
+    $('#previewModalForm').submit(function (event) {
+        event.preventDefault();
+        console.log("Clickity");
     });
 });
 
