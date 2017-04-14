@@ -51,7 +51,7 @@ $(document).ready(function () {
     });
 
     $('#previewRounds').click(function () {
-        $("#previewModalForm").find('[type="submit"]').trigger('click');
+        $.get()
     });
 
     $('.close').click(function () {
