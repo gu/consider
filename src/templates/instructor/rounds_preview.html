@@ -12,7 +12,6 @@
                 <p> {{question|safe}} </p>
             </div>
             {%- if not expired -%}
-            <form id="form" method="post" {% if not expired -%} action="/student_rounds" {%- endif -%}>
             <div class="list-group">
                 {% for option in options %}
                 <input type="radio" name="optionsRadios" id="option{{loop.index}}" value="option{{loop.index}}" {% if expired -%} disabled="true" {%- endif -%}>

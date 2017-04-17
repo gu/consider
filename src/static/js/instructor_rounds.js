@@ -51,7 +51,7 @@ $(document).ready(function () {
     });
 
     $('#previewRounds').click(function () {
-        $.get()
+        window.open("/rounds_preview", "_blank");
     });
 
     $('.close').click(function () {
