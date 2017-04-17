@@ -85,7 +85,7 @@ class RoundsPreview(webapp2.RequestHandler):
         template_values['logouturl'] = logout_url
         from src import config
         template_values['documentation'] = config.DOCUMENTATION
-        template = utils.jinja_env().get_template('student/rounds.html')
+        template = utils.jinja_env().get_template('../../templates/students/round.html')
         template.render_template(template_values)
         # end get
 
