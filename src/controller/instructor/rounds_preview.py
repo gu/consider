@@ -3,23 +3,25 @@ import json
 
 import jinja2
 import webapp2
+import rounds
 from google.appengine.api import users
 
 from src import model, utils
 
 
-class RoundsPreview(webapp2.RequestHandler):
+class RoundsPreview(rounds.Rounds):
 
-    def get(self, round):
+    def get(self):
         # First, check that the logged in user is an instructor
         instructor = utils.check_privilege(model.Role.instructor)
         if not instructor:
-            # Redirect home if not a student
+            # Redirect home if not an instructor
             return self.redirect('/home')
         # end
 
         # Otherwise, grab the key for the section
-        section_key = round.request.get('section')
+        course_name = self.request.get('course')
+        section_key = self.request.get('section')
         # Make sure that it isn't null
         if not section_key:
             # Error if so, and redirect home
@@ -39,7 +41,7 @@ class RoundsPreview(webapp2.RequestHandler):
                     self.redirect('/error?code=103')
                 else:
                     # Otherwise, we need to set our template values
-                    self.render_template(student, section)
+                    self.render_template(instructor, section)
 
     # end get
 

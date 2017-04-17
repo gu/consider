@@ -51,7 +51,10 @@ $(document).ready(function () {
     });
 
     $('#previewRounds').click(function () {
-        window.open("/rounds_preview", "_blank");
+        var $form = $(this);
+        course = $form.find('[name="course"]').val();
+        section = $form.find('[name="section"]').val();
+        window.open("/rounds_preview?=" + course + "+" + section, "_blank");
     });
 
     $('.close').click(function () {
