@@ -384,6 +384,8 @@ class HtmlExport(webapp2.RequestHandler):
         template_values['responses'] = output_responses
         template_values['option'] = output_options
         template_values['summary'] = output_summary
+        template_values['initial_question'] = rounds[0].quiz.question
+        template_values['summary_question'] = rounds[-1].quiz.question
         #Wrote it this way to show all values of type, may want a default page -Alex T
         if type == "single":
             template = utils.jinja_env().get_template('instructor/show_html_responses.html')
