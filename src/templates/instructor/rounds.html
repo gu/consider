@@ -116,8 +116,8 @@
                     <tr {% if selectedSectionObject.current_round == 1 %} class="row-highlight" {% endif %} >
                         <td>{{initialQuestion.number}}</td>
                         <td data-deadline="{{initialQuestion.deadline|local_time}}">{{initialQuestion.deadline|local_time}}</td>
-                        <td class="question md">{{initialQuestion.quiz.question|safe}}</td>
-                        <td class="options">
+                        <td class="question md" id="question">{{initialQuestion.quiz.question|safe}}</td>
+                        <td class="options" id="options">
                             <ul class="list-group">
                                 {% for option in initialQuestion.quiz.options %}
                                 <li class="md list-group-item">{{option|safe}}</li>
