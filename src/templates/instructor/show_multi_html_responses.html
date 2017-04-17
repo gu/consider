@@ -3,89 +3,113 @@
 {% block content %}
 
 {% if not posts %}
-    <!-- Rounds -->
-    <!-- There has to be a better, more reliable way to get this number-->
-    {% for i in seq_rounds[groups[0].members[0]] %}
-            <div class="card">
-                <div class="card-title">
-                    {% if i == 1 %}
-                        <h2> Initial Submissions </h2>
-                    {% elif i != seq_rounds[groups[0].members[0]][-1] %}
-                        <h2> Round {{ i - 1 }} </h2>
-                    {% else %}
-                        <h2> Final Submissions </h2>
-                    {% endif %}
-                </div> <!-- ./card-title -->
-                <div class="card-body">
-                    <table class="table table-bordered">
-                        <tr>
-                            {% for student in students %}
-                                <th>
-                                    {{ student.first_name }} {{ student.last_name }} <br>
-                                    Alias: {{ student.alias }} Group {{ student.group }} <br>
-                                    Email: {{ student.email }}
-                                </th>
-                            {% endfor %}
-                        </tr>
-                        {% if i == 1 or i == seq_rounds[groups[0].members[0]][-1] %}
-                            <tr>
-                                {% for student in students %}
-                                    <td>
-                                        <strong>Option:</strong> {{ option[student.email][i-1]}}
-                                    </td>
-                                {% endfor %}
-                            </tr>
+    {% for group in groups %}
+        <!-- Rounds -->
+        <!-- There has to be a better, more reliable way to get this number-->
+        {% for i in seq_rounds[group.members[0]] %}
+                <div class="card">
+                    <div class="card-title">
+                        {% if i == 1 %}
+                            <h2> Initial Submissions <span style="float: right">Group {{ group.number }}</span></h2>
+                        {% elif i != seq_rounds[groups[0].members[0]][-1] %}
+                            <h2> Round {{ i - 1 }} <span style="float: right">Group {{ group.number }}</span></h2>
                         {% else %}
+                            <h2> Final Submissions <span style="float: right">Group {{ group.number }}</span></h2>
+                        {% endif %}
+                    </div> <!-- ./card-title -->
+                    <div class="card-body">
+                        <table class="table table-bordered">
                             <tr>
                                 {% for student in students %}
-                                    <td>
-                                        <strong>Opinion:</strong> {{ responses[student.email][i-1]}}
-                                    </td>
+                                    {% if student.email in group.members %}
+                                    <th>
+                                        {{ student.alias }}: {{ student.first_name }} {{ student.last_name }} <br>
+                                        {% if i == 1 %}
+                                            Email: {{ student.email }}
+                                        {% endif %}
+                                    </th>
+                                    {% endif %}
                                 {% endfor %}
                             </tr>
-                        {% endif %}
-                        <tr>
-                            {% for student in students %}
-                                <td>
-                                    {% if comments[student.email][i-1] == "NA" %}
-                                        <em>Not submitted.</em>
-                                    {% else %}
-                                        {{ comments[student.email][i-1] }}
+                            {% if i == 1 or i == seq_rounds[groups[0].members[0]][-1] %}
+                                <tr>
+                                    {% for student in students %}
+                                        {% if student.email in group.members %}
+                                        <td>
+                                            <strong>Option:</strong> {{ option[student.email][i-1]}}
+                                        </td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    {% for student in students %}
+                                        {% if student.email in group.members %}
+                                        <td>
+                                            <strong>Opinion:</strong>
+                                            {% for opt in responses[student.email][i-1] %}
+                                                {% if opt == "support" %}
+                                                    Agrees with S{{ loop.index }}.
+                                                {% elif opt == "disagree" %}
+                                                    Disagrees with S{{ loop.index }}.
+                                                {% elif opt == "neutral" %}
+                                                    Neutral to S{{ loop.index }}.
+                                                {% endif %}
+                                            {% endfor %}
+                                        </td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endif %}
+                            <tr>
+                                {% for student in students %}
+                                    {% if student.email in group.members %}
+                                    <td>
+                                        {% if comments[student.email][i-1] == "NA" %}
+                                            <em>Not submitted.</em>
+                                        {% else %}
+                                            {{ comments[student.email][i-1] }}
+                                        {% endif %}
+                                    </td>
                                     {% endif %}
-                                </td>
-                            {% endfor %}
-                        </tr>
-                    </table>
-                </div> <!-- ./card-body -->
-            </div> <!-- ./card -->
-    {% endfor %}
+                                {% endfor %}
+                            </tr>
+                        </table>
+                    </div> <!-- ./card-body -->
+                </div> <!-- ./card -->
+        {% endfor %}
 
-    <!-- Summaries -->
-    <div class="card">
-        <div class="card-title">
-            <h2> Summary Submissions </h2>
-        </div> <!-- ./card-title -->
-        <div class="card-body">
-            <table class="table table-bordered">
-                <tr>
-                    {% for student in students %}
-                        <th>
-                            {{ student.first_name }} {{ student.last_name }} <br>
-                            Alias: {{ student.alias }} Group {{ student.group }} <br>
-                            Email: {{ student.email }}
-                        </th>
-                    {% endfor %}
-                </tr>
-                <tr>
-                    {% for student in students %}
-                        <td>
-                            {{ summary[student.email][-1] }}
-                        </td>
-                    {% endfor %}
-                </tr>
-            </table>
-        </div> <!-- ./card-body -->
-    </div> <!-- ./card -->
+        <!-- Summaries -->
+        <div class="card">
+            <div class="card-title">
+                <h2> Summary Submissions <span style="float: right">Group {{ group.number }}</span></h2>
+            </div> <!-- ./card-title -->
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <tr>
+                        {% for student in students %}
+                            {% if student.email in group.members %}
+                            <th>
+                                {{ student.first_name }} {{ student.last_name }} <br>
+                                Alias: {{ student.alias }} Group {{ student.group }} <br>
+                                Email: {{ student.email }}
+                            </th>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for student in students %}
+                            {% if student.email in group.members %}
+                            <td>
+                                {{ summary[student.email][-1] }}
+                            </td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                </table>
+            </div> <!-- ./card-body -->
+        </div> <!-- ./card -->
+    {% endfor %}
 {% endif %}
 <!--sequential round stuff, only works if you're at round 2 or later-->
 {% if posts %}

@@ -22,7 +22,13 @@
                 <table class="table table-bordered">
                     <tr>
                         {% for r in seq_rounds[student.email] %}
-                            <th>Round-{{ r }}</th>
+                            {% if r == 1 %}
+                                <th>Initial Submission</th>
+                            {% elif r != seq_rounds[student.email][-1] %}
+                                <th>Round {{ r - 1}}</th>
+                            {% else %}
+                                <th>Final Submission</th>
+                            {% endif %}
                         {% endfor %}
                     </tr>
                     <tr>
@@ -50,7 +56,16 @@
                         {% for response in responses[student.email] %}
                             <td>
                                 {%- if response and response!='NA' -%}
-                                    <strong>Response: </strong>{{ response|safe }}
+                                    <strong>Response: </strong>
+                                    {% for opt in response %}
+                                        {% if opt == "support" %}
+                                            Agrees with S{{ loop.index }}.
+                                        {% elif opt == "disagree" %}
+                                            Disagrees with S{{ loop.index }}.
+                                        {% elif opt == "neutral" %}
+                                            Neutral to S{{ loop.index }}.
+                                        {% endif %}
+                                    {% endfor %}
 
                                 {%- endif -%}
                              </td>
@@ -179,14 +194,6 @@
 
     {% endfor %}
 {% endif %}
-
-
-
-
-
-
-
-
 
 {#<!--
 {% for student in students %}
