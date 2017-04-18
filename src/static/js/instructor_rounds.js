@@ -50,8 +50,13 @@ $(document).ready(function () {
         $("#editEmailForm").find('[type="submit"]').trigger('click');
     });
 
-    $('#previewRounds').click(function () {
+    $('#previewRound1').click(function () {
         window.open("/rounds_preview?course=" + document.getElementById("courseSelector").value + "&section=" + document.getElementById("sectionSelector").value + "&round=1", "_blank");
+    });
+
+    $('#previewRound2').click(function () {
+        var finalRound = document.getElementById("round-table").rows.length + 1;
+        window.open("/rounds_preview?course=" + document.getElementById("courseSelector").value + "&section=" + document.getElementById("sectionSelector").value + "&round=" + finalRound, "_blank");
     });
 
     $('.close').click(function () {
