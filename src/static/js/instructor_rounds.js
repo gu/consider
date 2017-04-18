@@ -51,7 +51,7 @@ $(document).ready(function () {
     });
 
     $('#previewRounds').click(function () {
-        window.open("/rounds_preview?course=" + document.getElementById("courseSelector").value + "&section=" + document.getElementById("sectionSelector").value, "_blank");
+        window.open("/rounds_preview?course=" + document.getElementById("courseSelector").value + "&section=" + document.getElementById("sectionSelector").value + "&round=1", "_blank");
     });
 
     $('.close').click(function () {

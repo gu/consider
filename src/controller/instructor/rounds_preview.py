@@ -85,8 +85,8 @@ class RoundsPreview(webapp2.RequestHandler):
         template_values['logouturl'] = logout_url
         from src import config
         template_values['documentation'] = config.DOCUMENTATION
-        template = utils.jinja_env().get_template('../../templates/students/round.html')
-        template.render_template(template_values)
+        # template = utils.jinja_env().get_template('../../templates/students/round.html')
+        self.render_template(instructor, current_section)
         # end get
 
     def post(self):
@@ -177,7 +177,7 @@ class RoundsPreview(webapp2.RequestHandler):
 
             # end render_templates
 
-    def quiz_view_template(student, rround, template_values):
+    def quiz_view_template(self, instructor, rround, template_values):
 
         # Now set the remaining template values directly
         template_values['question'] = rround.quiz.question
