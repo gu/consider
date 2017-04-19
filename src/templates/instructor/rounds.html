@@ -116,8 +116,8 @@
                     <tr {% if selectedSectionObject.current_round == 1 %} class="row-highlight" {% endif %} >
                         <td>{{initialQuestion.number}}</td>
                         <td data-deadline="{{initialQuestion.deadline|local_time}}">{{initialQuestion.deadline|local_time}}</td>
-                        <td class="question md">{{initialQuestion.quiz.question|safe}}</td>
-                        <td class="options">
+                        <td class="question md" id="question">{{initialQuestion.quiz.question|safe}}</td>
+                        <td class="options" id="options">
                             <ul class="list-group">
                                 {% for option in initialQuestion.quiz.options %}
                                 <li class="md list-group-item">{{option|safe}}</li>
@@ -149,7 +149,7 @@
 
 {% include '/instructor/rounds_discussion_card.html' %}
 
-</div> <!-- END ./div class=card for Discussion Block -->
+</div> <!-- END OF DISCUSSION BLOCK -->
 
 
 <!-- START OF SUMMARY QUESTION BLOCK-->
@@ -213,8 +213,17 @@
                 <hr>
 
                 <button type="button" class="btn btn-warning btn-lg" data-toggle="modal" data-target="#editEmailModal">
-                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-                    Start Rounds
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Start Rounds
+                </button>
+
+                <button type="button" class="btn btn-warning btn-lg" id="previewRound1" style="margin-left:10px;"
+                    aria-label="Preview">
+                    <span aria-hidden="true"></span> Preview First Round
+                </button>
+
+                <button type="button" class="btn btn-warning btn-lg" id="previewRound2" style="margin-left:10px;"
+                    aria-label="Preview">
+                    <span aria-hidden="true"></span> Preview Final Round
                 </button>
 
             </div>
@@ -231,11 +240,14 @@
                 </button>
             </div>
         </div>
-        {% endif%}
         {% endif %}
-    </div>
+        {% endif %}
+</div>
+
+
 </div>
 <!-- END OF SUMMARY BLOCK-->
+
 
 {#
 # Modals
