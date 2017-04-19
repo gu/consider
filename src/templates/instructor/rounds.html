@@ -213,8 +213,17 @@
                 <hr>
 
                 <button type="button" class="btn btn-warning btn-lg" data-toggle="modal" data-target="#editEmailModal">
-                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-                    Start Rounds
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Start Rounds
+                </button>
+
+                <button type="button" class="btn btn-warning btn-lg" id="previewRound1" style="margin-left:10px;"
+                    aria-label="Preview">
+                    <span aria-hidden="true"></span> Preview First Round
+                </button>
+
+                <button type="button" class="btn btn-warning btn-lg" id="previewRound2" style="margin-left:10px;"
+                    aria-label="Preview">
+                    <span aria-hidden="true"></span> Preview Final Round
                 </button>
 
             </div>
@@ -233,26 +242,6 @@
         </div>
         {% endif %}
         {% endif %}
-<!-- START OF PREVIEW BLOCK-->
-<div class="card">
-<div class="card-title">
-    <h4>Preview</h4>
-</div>
-<div class="card-body">
-
-<button type="button" class="btn btn-default" id="previewRound1" style=""
-        aria-label="Preview">
-    <span aria-hidden="true"></span> Preview First Round
-</button>
-
-    <button type="button" class="btn btn-default" id="previewRound2" style="margin-left:10px;"
-        aria-label="Preview">
-    <span aria-hidden="true"></span> Preview Final Round
-</button>
-
-</div>
-</div>
-<!-- END OF PREVIEW BLOCK-->
 </div>
 
 

@@ -194,6 +194,7 @@ class RoundsPreview(webapp2.RequestHandler):
             if group:
                 # 2. Extract all the posts in that group from db
                 posts = model.SeqResponse.query(ancestor=group.key).order(model.SeqResponse.index).fetch()
+                print("Posts:" + posts)
                 utils.log('Posts: ' + str(posts))
                 # 3. Send all the posts to the template
                 template_values['posts'] = posts
@@ -209,38 +210,25 @@ class RoundsPreview(webapp2.RequestHandler):
     # end seq_discussion_view_template
 
     def discussion_view_template(self, instructor, section, round_number, template_values):
-        student_info = utils.get_student_info(instructor.email, section.students)
-        if student_info:
-            template_values['alias'] = student_info.alias
-            group_id = student_info.group
-            group = model.Group.get_by_id(group_id, parent=section.key)
-            # Double check that it was found
-            if group:
-                # Depending on round number, we have to grab from
-                if round_number == 1:
-                    previous_round = model.Round.get_by_id(1, parent=section.key)
-                else:
-                    previous_round = model.Round.get_by_id(round_number - 1, parent=section.key)
-                # end
-                # Now grab all the group comments for the previous round
-                comments, did_not_participate = self.group_comments(group, section, previous_round)
-                # Set the template value for all the group comments
-                template_values['comments'] = comments
-                template_values['did_not_participate'] = did_not_participate
-                # Grab the requested round
-                requested_round = model.Round.get_by_id(round_number, parent=section.key)
-                # Grab the discussion description
-                template_values['description'] = requested_round.description
-                # And grab the logged in student's response
-                stu_response = model.Response.get_by_id(instructor.email, parent=requested_round.key)
-                # Check that they actually answered
-                if stu_response:
-                    # And set template values to show their previous response
-                    template_values['comment'] = stu_response.comment
-                    utils.log('Comment = {0}'.format(str(stu_response.comment)))
-                    template_values['response'] = ','.join(str(item) for item in stu_response.response)
-
-                    # end discussion_view_template
+        group = 1
+        # Double check that it was found
+        if group:
+            # Depending on round number, we have to grab from
+            if round_number == 1:
+                previous_round = model.Round.get_by_id(1, parent=section.key)
+            else:
+                previous_round = model.Round.get_by_id(round_number - 1, parent=section.key)
+            # end
+            # Now grab all the group comments for the previous round
+            comments = ["Lorem Ipsum", "Lorem Ipsumer"]
+            # Set the template value for all the group comments
+            template_values['comments'] = comments
+            template_values['did_not_participate'] = []
+            # Grab the requested round
+            requested_round = model.Round.get_by_id(round_number, parent=section.key)
+            # Grab the discussion description
+            template_values['description'] = requested_round.description
+            # end discussion_view_template
 
 
     def group_comments(group, section, previous_round):
