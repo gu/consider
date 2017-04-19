@@ -55,7 +55,11 @@ $(document).ready(function () {
     });
 
     $('#previewRound2').click(function () {
-        var finalRound = document.getElementById("round-table").rows.length + 1;
+        if(document.getElementById("round-table")) {
+            var finalRound = document.getElementById("round-table").rows.length + 1;
+        } else {
+            var finalRound = 2;
+        }
         window.open("/rounds_preview?course=" + document.getElementById("courseSelector").value + "&section=" + document.getElementById("sectionSelector").value + "&round=" + finalRound, "_blank");
     });
 
