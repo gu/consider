@@ -104,7 +104,7 @@ class Rounds(webapp2.RequestHandler):
         student = utils.check_privilege(model.Role.student)
         if not student:
             # Redirect home if not a student
-            return self.redirect('/home')
+            return self.abort(401)
         # end
 
         # Otherwise, log which student made the get
@@ -142,7 +142,7 @@ class Rounds(webapp2.RequestHandler):
         student = utils.check_privilege(model.Role.student)
         if not student:
             # Redirect home if not a student
-            return self.redirect('/home')
+            return self.abort(401)
         # end
 
         # First, grab the section key from the page
