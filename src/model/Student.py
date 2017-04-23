@@ -1,6 +1,6 @@
 from google.appengine.ext import ndb
 
-from . import Section
+from . import Assignment
 
 
 class Student(ndb.Model):
@@ -11,7 +11,7 @@ class Student(ndb.Model):
     """
     email = ndb.StringProperty(required=True)
     """ String. Must be non-empty and unique. Retrieved from Google automatically """
-    sections = ndb.KeyProperty(kind=Section, repeated=True, indexed=False)
+    sections = ndb.KeyProperty(kind=Assignment, repeated=True, indexed=False)
     """ List of active `Section`_ s this student is enrolled in. """
     first_name = ndb.StringProperty(required=False, default="")
     """Student's first name"""

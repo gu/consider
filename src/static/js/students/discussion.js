@@ -2,7 +2,7 @@ $(document).ready(function() {
   var numComments = $('#student-discussion').data().numcomments;
   var response = $('#student-discussion').data().response;
   var expired = $('#student-discussion').data().expired;
-  var sectionKey = $('#student-discussion').data().sectionkey;
+  var assignmentKey = $('#student-discussion').data().assignmentkey;
   var page = $('#student-discussion').data().page;
 
   var resp = [];
@@ -31,7 +31,7 @@ $(document).ready(function() {
       //Prevent the default behaviour
       event.preventDefault();
 
-      var sectionKey = $('#student-discussion').data().sectionkey;
+      var assignmentKey = $('#student-discussion').data().assignmentkey;
 
       // Update content of textarea(s) handled by CKEditor
       for ( instance in CKEDITOR.instances ) {
@@ -50,7 +50,7 @@ $(document).ready(function() {
           var comment = CKEDITOR.instances.comment.getData().replace(/<p>/g,'').replace(/<\/p>/g,'').replace(/&nbsp;/g,'');
           var url = $form.attr("action");
 
-          $.post(url, {comm: comment, response: JSON.stringify(resp), section: sectionKey, thumbs:JSON.stringify(thumbs)}, function (data) {
+          $.post(url, {comm: comment, response: JSON.stringify(resp), assignment: assignmentKey, thumbs:JSON.stringify(thumbs)}, function (data) {
               bootbox.alert(data, function () {
                   ocomment = comment;
               });

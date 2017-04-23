@@ -23,27 +23,27 @@ $("#modalForm").submit(function (event) {
     });
 });
 
-$("#sectionModalForm").submit(function (event) {
+$("#assignmentModalForm").submit(function (event) {
     //Prevent the default behaviour
     event.preventDefault();
 
     //collect form elements
     var $form = $(this),
-            sectionName = $('#sectionName').val(),
-            sectionCourse = $('#sectionCourse').val(),
+            assignmentName = $('#assignmentName').val(),
+            assignmentCourse = $('#assignmentCourse').val(),
             url = $form.attr("action");
 
-    bootbox.confirm("Are you sure, you want to add Section: " + sectionName + " to Course: " + sectionCourse + "  ?", function (result) {
+    bootbox.confirm("Are you sure, you want to add assignment: " + assignmentName + " to Course: " + assignmentCourse + "  ?", function (result) {
         if (result) {
             // do the POST and get the callback
-            $.post('/sections', {section: sectionName, course: sectionCourse, action: 'add'}, function (data) {
+            $.post('/assignments', {assignment: assignmentName, course: assignmentCourse, action: 'add'}, function (data) {
                 if (data.charAt(0) == 'E') {
-                    $("#sectionNameContainer").addClass("has-error");
-                    $("#sectionNameHelpBlock").text(data.substring(1));
-                    $("#sectionName").focus();
+                    $("#assignmentNameContainer").addClass("has-error");
+                    $("#assignmentNameHelpBlock").text(data.substring(1));
+                    $("#assignmentName").focus();
                 }
                 else {
-                    location.href = "/home?course=" + sectionCourse;
+                    location.href = "/home?course=" + assignmentCourse;
                 }
             });
         }
@@ -52,15 +52,15 @@ $("#sectionModalForm").submit(function (event) {
 
 $(document).ready(function () {
     $('#courseName').tooltip({'trigger': 'focus', 'title': 'Course name should be unique'});
-    $('#sectionName').tooltip({'trigger': 'focus', 'title': 'Section name should be unique inside a Course'});
+    $('#assignmentName').tooltip({'trigger': 'focus', 'title': 'assignment name should be unique inside a Course'});
 });
 
 function submitCourse() {
     $("#modalForm").find('[type="submit"]').trigger('click');
 }
 
-function submitSection() {
-    $("#sectionModalForm").find('[type="submit"]').trigger('click');
+function submitassignment() {
+    $("#assignmentModalForm").find('[type="submit"]').trigger('click');
 }
 
 function addCourse() {
@@ -71,13 +71,13 @@ $('#myModal').on('shown.bs.modal', function () {
     $('#courseName').focus();
 });
 
-$('#sectionModal').on('shown.bs.modal', function () {
-    $('#sectionName').focus();
+$('#assignmentModal').on('shown.bs.modal', function () {
+    $('#assignmentName').focus();
 });
 
-function addSection(course) {
-    $("#sectionModal").modal('show');
-    $("#sectionCourse").val(course);
+function addassignment(course) {
+    $("#assignmentModal").modal('show');
+    $("#assignmentCourse").val(course);
 }
 
 function toggleCourseStatus(course) {
@@ -96,14 +96,14 @@ function toggleCourseStatus(course) {
     });
 }
 
-function toggleSectionStatus(course, section) {
-    bootbox.confirm("Toggle status of: " + section + " in course: " + course + "?", function (result) {
+function toggleassignmentStatus(course, assignment) {
+    bootbox.confirm("Toggle status of: " + assignment + " in course: " + course + "?", function (result) {
         if (result) {
             // do the POST and get the callback
-            $.post("/sections",
+            $.post("/assignments",
             {
               course: course,
-              section: section,
+              assignment: assignment,
               action:'toggle'
             },
             function (data) {

@@ -1,6 +1,6 @@
 from google.appengine.ext import ndb
 
-from . import Section
+from . import Assignment
 
 """ 
 - Author(s): Capstone team AU16

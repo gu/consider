@@ -20,7 +20,7 @@ from src import model, utils
 class HomePage(webapp2.RequestHandler):
     def get(self):
         """
-        Display a list of active ``Section``_\ s this ``Student``_ is enrolled in.
+        Display a list of active ``assignment``_\ s this ``Student``_ is enrolled in.
         """
         # First, check that the logged in user is a student
         student = utils.check_privilege(model.Role.student)
@@ -39,36 +39,36 @@ class HomePage(webapp2.RequestHandler):
             'logouturl': logout_url,
             'nickname': student.email
         }
-        # Grab the sections the student is a part of
-        sections = student.sections
-        # Create a new list for holding the section objects from the db
-        section_list = []
-        # Double check that the student is actually enrolled in a section
-        if sections:
-            # Loop over all the sections they're in
-            for section in sections:
+        # Grab the assignments the student is a part of
+        assignments = student.assignments
+        # Create a new list for holding the assignment objects from the db
+        assignment_list = []
+        # Double check that the student is actually enrolled in a assignment
+        if assignments:
+            # Loop over all the assignments they're in
+            for assignment in assignments:
                 # Grab it from the db
-                section_obj = section.get()
-                if section_obj.is_active:
-                    # Get the parent course for the section
-                    course_obj = section.parent().get()
+                assignment_obj = assignment.get()
+                if assignment_obj.is_active:
+                    # Get the parent course for the assignment
+                    course_obj = assignment.parent().get()
                     # Double check that both exist
-                    if section_obj and course_obj:
-                        # Grab the section key, section name, and course name
+                    if assignment_obj and course_obj:
+                        # Grab the assignment key, assignment name, and course name
                         sec = {
-                            'key': section.urlsafe(),
-                            'name': section_obj.name,
+                            'key': assignment.urlsafe(),
+                            'name': assignment_obj.name,
                             'course': course_obj.name,
-                            'group': findGroupIDByEmail(section_obj, student.email),
-                            'round': utils.get_current_round(section_obj)
+                            'group': findGroupIDByEmail(assignment_obj, student.email),
+                            'round': utils.get_current_round(assignment_obj)
                         }
                         # And throw it in the list
-                        section_list.append(sec)
+                        assignment_list.append(sec)
                         # end
                         # end
         # end
-        # Add the list of sections the student is in to our template
-        template_values['sections'] = section_list
+        # Add the list of assignments the student is in to our template
+        template_values['assignments'] = assignment_list
         # Set the template html page
         template = utils.jinja_env().get_template('students/home.html')
         # And render it
@@ -79,7 +79,7 @@ class HomePage(webapp2.RequestHandler):
 
 # end class HomePage
 
-def findGroupIDByEmail(section, email):
-    for student in section.students:
+def findGroupIDByEmail(assignment, email):
+    for student in assignment.students:
         if student.email == email:
             return student.group

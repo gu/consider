@@ -2,7 +2,7 @@ $(document).ready(function() {
   var option = $('#student-round').data().option;
   var expired = $('#student-round').data().expired;
   var lastRound = $('#student-round').data().last;
-  var sectionKey = $('#student-round').data().sectionkey;
+  var assignmentKey = $('#student-round').data().assignmentkey;
 
   if (option.length > 0)
   {
@@ -49,7 +49,7 @@ $(document).ready(function() {
 
         if (comment.length > 0)
         {
-          $.post(url,{option:radio, comm:comment, summary:summary, section:sectionKey},function (data) {
+          $.post(url,{option:radio, comm:comment, summary:summary, assignment:assignmentKey},function (data) {
               bootbox.alert(data,function(){
                   ocomment = comment;
               });

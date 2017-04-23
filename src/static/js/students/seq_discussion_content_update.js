@@ -1,4 +1,4 @@
-var sectionKey = $('#content-update').data().sectionkey;
+var assignmentKey = $('#content-update').data().assignmentkey;
 
 $('#seqDiscussionForm').submit(function (event) {
     event.preventDefault();
@@ -12,7 +12,7 @@ $('#seqDiscussionForm').submit(function (event) {
         url = $form.attr('action');
     $.post(url,
       {
-          section: sectionKey,
+          assignment: assignmentKey,
           text: $form.find('#seqDiscussionPost').val()
       },
       function (data) {

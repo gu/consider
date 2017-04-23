@@ -1,12 +1,12 @@
 var selectedCourse = $('#list-students').data().course;
-var selectedSection = $('#list-students').data().section;
+var selectedassignment = $('#list-students').data().assignment;
 
 $('#courseSelector').on('change', function () {
     location.href = "/students?course=" + this.value;
 });
 
-$('#sectionSelector').on('change', function () {
-    location.href = "/students?course=" + selectedCourse + "&section=" + this.value;
+$('#assignmentSelector').on('change', function () {
+    location.href = "/students?course=" + selectedCourse + "&assignment=" + this.value;
 });
 
 function addStudents() {
@@ -26,7 +26,7 @@ $("#modalForm").submit(function (event) {
             data = document.getElementById('student-data').value,
             email = document.getElementById('inputEmail').value,
             course = selectedCourse,
-            section = selectedSection,
+            assignment = selectedassignment,
             url = $form.attr("action");
 
     var emails = email.replace(/ /g, ',').split(/[\n,]+/);
@@ -45,7 +45,7 @@ $("#modalForm").submit(function (event) {
                         emails: JSON.stringify(emails),
                         csv: JSON.stringify(data),
                         course: course,
-                        section: section,
+                        assignment: assignment,
                         action: 'addBoth'
                     }, function (data) {
                         if (data.charAt(0) == 'E') {
@@ -63,7 +63,7 @@ $("#modalForm").submit(function (event) {
                     $.post(url, {
                         emails: JSON.stringify(emails),
                         course: course,
-                        section: section,
+                        assignment: assignment,
                         action: 'add'
                     }, function (data) {
                         if (data.charAt(0) == 'E') {
@@ -81,7 +81,7 @@ $("#modalForm").submit(function (event) {
                     $.post(url, {
                         emails: JSON.stringify(data),
                         course: course,
-                        section: section,
+                        assignment: assignment,
                         action: 'addCSV'
                     }, function (data) {
                         if (data.charAt(0) == 'E') {
@@ -104,7 +104,7 @@ function deleteStudent(student) {
             $.post("/students", {
                 email: student,
                 course: selectedCourse,
-                section: selectedSection,
+                assignment: selectedassignment,
                 action: 'remove'
             }, function (data) {
                 if (data.charAt(0) == 'E') {

@@ -2,11 +2,11 @@
 // the highlighting/styles in the navigation bar to reflect
 // which round is being displayed.
 var currentPage = $('#reload').data().currentPage;
-var sectionKey = $('#reload').data().sectionkey;
+var assignmentKey = $('#reload').data().assignmentkey;
 
 var curr_round = currentPage;
 function loadRound(round) {
-    var url = location.href.split('?')[0] + '?section=' + sectionKey + '&round=' + round;
+    var url = location.href.split('?')[0] + '?assignment=' + assignmentKey + '&round=' + round;
     $("#navbar li").removeClass("round-viewing nav-active");
     $("#navbar a").removeClass("round-viewing nav-active");
     getRoundButton(round).addClass("round-viewing nav-active");

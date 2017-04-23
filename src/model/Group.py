@@ -5,12 +5,12 @@ class Group(ndb.Model):
     """
     .. _Group:
 
-    An object to represent the Group of students in a course section.
+    An object to represent the Group of students in a course assignment.
 
-    Child of `Section`_.
+    Child of `Assignment`_.
     """
     number = ndb.IntegerProperty(required=True)
-    """ Integer. Index of the group within that `Section`_ """
+    """ Integer. Index of the group within that `Assignment`_ """
     members = ndb.StringProperty(repeated=True)
     """ List of Strings. Emails of the `Student`_\ s in this group. """
     size = ndb.IntegerProperty(default=0, indexed=False)

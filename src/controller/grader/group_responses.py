@@ -21,7 +21,7 @@ from src import model, utils
 
 class GroupResponses(webapp2.RequestHandler):
     """
-    API to retrieve and display responses for each section, organized into groups.
+    API to retrieve and display responses for each assignment, organized into groups.
     """
 
     def get(self):
@@ -39,43 +39,43 @@ class GroupResponses(webapp2.RequestHandler):
 
         # Otherwise, create a logout url
         logout_url = users.create_logout_url(self.request.uri)
-        # And get the course and section name from the page
+        # And get the course and assignment name from the page
         course_name = self.request.get('course')
-        selected_section_name = self.request.get('section')
-        # And grab the other courses and sections from this grader
-        template_values = utils.get_template_all_courses_and_sections(
-            grader, course_name, selected_section_name)
-        # Now check that the section from the webpage actually corresponded
-        # to an actual section in this course, and that the template was set
-        if 'selectedSectionObject' in template_values:
-            # If so, grab the current section from the template values
-            current_section = template_values['selectedSectionObject']
+        selected_assignment_name = self.request.get('assignment')
+        # And grab the other courses and assignments from this grader
+        template_values = utils.get_template_all_courses_and_assignments(
+            grader, course_name, selected_assignment_name)
+        # Now check that the assignment from the webpage actually corresponded
+        # to an actual assignment in this course, and that the template was set
+        if 'selectedassignmentObject' in template_values:
+            # If so, grab the current assignment from the template values
+            current_assignment = template_values['selectedassignmentObject']
             # Set the rounds and groups
-            template_values['round'] = current_section.rounds
-            template_values['groups'] = current_section.groups
+            template_values['round'] = current_assignment.rounds
+            template_values['groups'] = current_assignment.groups
             # And check that groups have actually been assigned
-            if current_section.groups > 0:
+            if current_assignment.groups > 0:
                 # Create a new dict for responses
                 resp = {}
                 # Loop over the groups (indexed by 1)
-                for g in range(1, current_section.groups + 1):
+                for g in range(1, current_assignment.groups + 1):
                     # And loop over the rounds (indexed by 1)
-                    for r in range(1, current_section.rounds + 1):
+                    for r in range(1, current_assignment.rounds + 1):
                         # Now set an empty list for each group and round
                         resp['group_' + str(g) + '_' + str(r)] = []
                         # end
                 # end
                 # Loop over the number of rounds (indexed by 1)
-                for r in range(1, current_section.rounds + 1):
+                for r in range(1, current_assignment.rounds + 1):
                     # Grab the responses for that round from the db
                     responses = model.Response.query(
-                        ancestor=model.Round.get_by_id(r, parent=current_section.key).key).fetch()
+                        ancestor=model.Round.get_by_id(r, parent=current_assignment.key).key).fetch()
                     # Double check that the responses actually exist
                     if responses:
                         # And loop over the responses
                         for res in responses:
-                            # And loop over the students in this section
-                            for s in current_section.students:
+                            # And loop over the students in this assignment
+                            for s in current_assignment.students:
                                 # Check that the email of the student
                                 # and the email of the response match
                                 # and that the student is in a group

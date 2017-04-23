@@ -79,8 +79,8 @@ try:
     else:
         print_failed(test_number,"instructor could not remove a student: TODO: seems this test is not testing the right thing")
     test_number += 1
-    #investigate: maybe removing just removes the student from the section, not from the entire thing
-    #result: yes it does (remove from section, not from everything).
+    #investigate: maybe removing just removes the student from the assignment, not from the entire thing
+    #result: yes it does (remove from assignment, not from everything).
     '''
     #test to see if a student can remove a student
     login("test-instructor@gmail.com",False)

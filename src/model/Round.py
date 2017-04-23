@@ -45,8 +45,8 @@ class Round(ndb.Model):  # FIXME move under a Group?
     """ Type of the round. 1=initial question, 2=discussoin round, 3=sequential discussion round, 4=read only round, 5=final question"""
 
     @staticmethod
-    def get_by_number(section_key, number):
-        req_round = Round.query(ancestor=section_key).filter(Round.number == number).fetch(1)[0]
+    def get_by_number(assignment_key, number):
+        req_round = Round.query(ancestor=assignment_key).filter(Round.number == number).fetch(1)[0]
         return req_round if req_round else None
 
     @staticmethod
@@ -55,6 +55,6 @@ class Round(ndb.Model):  # FIXME move under a Group?
         return types[value] if types.has_key(value) else 0
 
     @staticmethod
-    def fetch_real_rounds(section_key):
-        rounds = [r for r in Round.query(ancestor=section_key).filter(Round.type != 4).fetch()]
+    def fetch_real_rounds(assignment_key):
+        rounds = [r for r in Round.query(ancestor=assignment_key).filter(Round.type != 4).fetch()]
         return rounds

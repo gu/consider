@@ -1,11 +1,11 @@
 var selectedCourse = $('#groups').data().course;
-var selectedSection = $('#groups').data().section;
+var selectedAssignment = $('#groups').data().assignment;
 
 $('#courseSelector').on('change', function () {
     location.href = "/groups?course=" + this.value;
 });
-$('#sectionSelector').on('change', function () {
-    location.href = "/groups?course=" + selectedCourse + "&section=" + this.value;
+$('#assignmentSelector').on('change', function () {
+    location.href = "/groups?course=" + selectedCourse + "&assignment=" + this.value;
 });
 $("#form").submit(function (event) {
     //Prevent the default behaviour
@@ -18,7 +18,7 @@ $("#form").submit(function (event) {
     $.post("/groups", {
         groups: groups,
         course: selectedCourse,
-        section: selectedSection,
+        assignment: selectedAssignment,
         action: 'add'
     }, function (data) {
         if (data.charAt(0) == 'E') {
@@ -48,7 +48,7 @@ $("#form_table").submit(function (event) {
     $.post(url, {
         groups: data,
         course: selectedCourse,
-        section: selectedSection,
+        assignment: selectedassignment,
         action: 'update'
     }, function (data) {
         if (data.charAt(0) == 'E') {
@@ -79,7 +79,7 @@ $("#form_table2").submit(function (event) {
     $.post(url, {
         groups: data,
         course: selectedCourse,
-        section: selectedSection,
+        assignment: selectedassignment,
         action: 'update'
     }, function (data) {
         if (data.charAt(0) == 'E') {

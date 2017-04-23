@@ -23,25 +23,25 @@ class ShowResponses(webapp2.RequestHandler):
 
         # Otherwise, create a logout url
         logout_url = users.create_logout_url(self.request.uri)
-        # And get the course and section names from the page
+        # And get the course and assignment names from the page
         course_name = self.request.get('course')
-        selected_section_name = self.request.get('section')
-        # Grab all the courses and sections for the logged in grader
-        template_values = utils.get_template_all_courses_and_sections(grader,
+        selected_assignment_name = self.request.get('assignment')
+        # Grab all the courses and assignments for the logged in grader
+        template_values = utils.get_template_all_courses_and_assignments(grader,
                                                                       course_name.upper(),
-                                                                      selected_section_name.upper())
+                                                                      selected_assignment_name.upper())
         logout_url = users.create_logout_url(self.request.uri)
         template_values['logouturl'] = logout_url
-        if 'selectedSectionObject' in template_values:
-            # If so, grab that section from the template values
-            current_section = template_values['selectedSectionObject']
-            if current_section.students:
-                # template_values['students'] = current_section.students
-                template_values['num_std'] = len(current_section.students)
-            if current_section.rounds:
-                template_values['rounds'] = current_section.rounds
-            if current_section.groups:
-                template_values['num_group'] = current_section.groups
+        if 'selectedassignmentObject' in template_values:
+            # If so, grab that assignment from the template values
+            current_assignment = template_values['selectedassignmentObject']
+            if current_assignment.students:
+                # template_values['students'] = current_assignment.students
+                template_values['num_std'] = len(current_assignment.students)
+            if current_assignment.rounds:
+                template_values['rounds'] = current_assignment.rounds
+            if current_assignment.groups:
+                template_values['num_group'] = current_assignment.groups
         from src import config
         template_values['documentation'] = config.DOCUMENTATION
         template = utils.jinja_env().get_template('grader/show_responses.html')
@@ -51,19 +51,19 @@ class ShowResponses(webapp2.RequestHandler):
 class DataExport(webapp2.RequestHandler):
     def post(self):
         course_name = self.request.get('course')
-        section_name = self.request.get('section')
+        assignment_name = self.request.get('assignment')
         selector = self.request.get('action')
         # print selector
         grader_tmp = utils.check_privilege(model.Role.grader)
         grader = model.Grader.get_by_id(grader_tmp.email)
         grader.export_course = course_name.upper()
         course = model.Course.get_by_id(course_name, parent=grader.key)
-        course.export_section = section_name.upper()
-        section = model.Section.get_by_id(section_name.upper(), parent=course.key)
-        section.export_info = selector
+        course.export_assignment = assignment_name.upper()
+        assignment = model.Assignment.get_by_id(assignment_name.upper(), parent=course.key)
+        assignment.export_info = selector
         grader.put()
         course.put()
-        section.put()
+        assignment.put()
         # print ('finished')
 
     def get(self):
@@ -74,10 +74,10 @@ class DataExport(webapp2.RequestHandler):
         writer = csv.writer(self.response.out)
         grader = model.Grader.get_by_id(grader_tmp.email)
         course = model.Course.get_by_id(grader.export_course, parent=grader.key)
-        section = model.Section.get_by_id(course.export_section, parent=course.key)
-        students = section.students
-        writer.writerow([grader.export_course, course.export_section, ])
-        selector = section.export_info
+        assignment = model.Assignment.get_by_id(course.export_assignment, parent=course.key)
+        students = assignment.students
+        writer.writerow([grader.export_course, course.export_assignment, ])
+        selector = assignment.export_info
         selector = selector.split()
         count = 0
         export_rounds = {}
@@ -90,7 +90,7 @@ class DataExport(webapp2.RequestHandler):
                 export_rounds[int(selector[count])].append(int(selector[count + 1]))
             count += 2
         print export_rounds
-        rounds = model.Round.query(ancestor=section.key).fetch()
+        rounds = model.Round.query(ancestor=assignment.key).fetch()
         for i in export_rounds.keys():
             writer.writerow(['This is student ' + students[i].email + ' :', ])
             for j in export_rounds[i]:
@@ -100,7 +100,7 @@ class DataExport(webapp2.RequestHandler):
                     if resp.student == students[i].email:
                         # print 'test@@@'
                         writer.writerow([resp.student, resp.comment, resp.response, ])
-        # writer.writerow([grader.export_course, course.export_section, grader.email, ])
+        # writer.writerow([grader.export_course, course.export_assignment, grader.email, ])
         print 'Hello!'
 
 
@@ -109,9 +109,9 @@ class HtmlExport(webapp2.RequestHandler):
         grader_tmp = utils.check_privilege(model.Role.grader)
         grader = model.Grader.get_by_id(grader_tmp.email)
         course = model.Course.get_by_id(grader.export_course, parent=grader.key)
-        section = model.Section.get_by_id(course.export_section, parent=course.key)
-        students = section.students
-        selector = section.export_info
+        assignment = model.Assignment.get_by_id(course.export_assignment, parent=course.key)
+        students = assignment.students
+        selector = assignment.export_info
         selector = selector.split()
         count = 0
         export_rounds = {}
@@ -124,7 +124,7 @@ class HtmlExport(webapp2.RequestHandler):
                 export_rounds[int(selector[count])].append(int(selector[count + 1]))
             count += 2
         # print export_rounds
-        rounds = model.Round.query(ancestor=section.key).fetch()
+        rounds = model.Round.query(ancestor=assignment.key).fetch()
         template_values = {}
         output_students = []
         output_seq_rounds = {}
@@ -143,7 +143,7 @@ class HtmlExport(webapp2.RequestHandler):
             for j in export_rounds[i]:
                 output_seq_rounds[students[i].email].append(j)
                 flag = False
-                if section.has_rounds:  # TODO Also for last and first round in seq
+                if assignment.has_rounds:  # TODO Also for last and first round in seq
                     responses = model.Response.query(ancestor=rounds[j - 1].key).fetch()
                     for resp in responses:
                         utils.log('resp = ' + str(resp))

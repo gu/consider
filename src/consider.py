@@ -109,7 +109,7 @@ class CronTask(webapp2.RequestHandler):
     def get(self):
         time_notification = 120  # Email notification when time left is no more than 2 hours
         current_time = datetime.datetime.now()
-        sections = model.Section.query().fetch()
+        sections = model.Assignment.query().fetch()
         for section in sections:
             print section.name
             num = utils.get_current_round(section)

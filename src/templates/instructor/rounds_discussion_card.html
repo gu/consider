@@ -22,7 +22,7 @@
     <div class="col-xs-12 col-sm-12">
         <form id="addRoundsForm" action="/rounds">
             <input type="hidden" name="course" value="{{selectedCourse}}" />
-            <input type="hidden" name="section" value="{{selectedSection}}" />
+            <input type="hidden" name="assignment" value="{{selectedAssignment}}" />
             <button style="margin-top: 5px" type="submit" class="btn btn-default"
                     aria-label="Add Discussion">
                 <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Discussions
@@ -48,9 +48,9 @@
         <tbody>
 
 	        {% for obj in discussionRounds %}
-	        <tr id="round_{{obj.number}}" {% if selectedSectionObject.current_round == obj.number %} class="row-highlight" {% endif %} >
+	        <tr id="round_{{obj.number}}" {% if selectedAssignmentObject.current_round == obj.number %} class="row-highlight" {% endif %} >
                 <td>
-                    <button data-section="{{selectedSection}}" data-course="{{selectedCourse}}" data-round-key="{{obj.number}}" class="btn btn-default remove-round" aria-label="Remove Discussion" {% if obj.starttime|since_epoch < now|since_epoch %}disabled{% endif %}>
+                    <button data-assignment="{{selectedAssignment}}" data-course="{{selectedCourse}}" data-round-key="{{obj.number}}" class="btn btn-default remove-round" aria-label="Remove Discussion" {% if obj.starttime|since_epoch < now|since_epoch %}disabled{% endif %}>
                         <span class="glyphicon glyphicon-remove"></span>
                     </button>
                 </td>
@@ -87,7 +87,7 @@
                 <form class="form-horizontal" id="editDiscussionForm" method="post" style="text-align: center;"
                       action="/rounds">
                     <input type="hidden" name="course" value="{{selectedCourse}}" />
-                    <input type="hidden" name="section" value="{{selectedSection}}" />
+                    <input type="hidden" name="assignment" value="{{selectedAssignment}}" />
                     <input type="hidden" name="action" value="edit_round" />
                     <input type="hidden" name="round_id" value="" />
                     <div class="form-group">

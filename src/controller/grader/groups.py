@@ -22,17 +22,17 @@ from src import model, utils
 
 class Groups(webapp2.RequestHandler):
     """
-    API to retrieve and display the information of groups formed for the selected course and section.
+    API to retrieve and display the information of groups formed for the selected course and assignment.
 
     """
 
-    def modify_group_count(self, section, group_count):
+    def modify_group_count(self, assignment, group_count):
         """
-        Modifies the total number of groups in this section.
+        Modifies the total number of groups in this assignment.
 
         Args:
-            section (object):
-                Section whose group count is to be modified
+            assignment (object):
+                assignment whose group count is to be modified
             group_count (int):
                 The new total number of groups.
 
@@ -42,23 +42,23 @@ class Groups(webapp2.RequestHandler):
             # Error if so
             utils.error('Groups count not available.', handler=self)
         else:
-            if section.groups != group_count and group_count > 0:
+            if assignment.groups != group_count and group_count > 0:
                 # If the total number of groups are not as requested change them
-                section.groups = group_count
-                section.put()
+                assignment.groups = group_count
+                assignment.put()
             # end
             utils.log('Groups modified.', type='Success!', handler=self)
             # end
 
     # end modify_group_count
 
-    def update_groups(self, section, groups):
+    def update_groups(self, assignment, groups):
         """
-        Updates the groups assignments for the given section.
+        Updates the groups assignments for the given assignment.
 
         Args:
-            section (object):
-                Section whose group assignments are to be updated.
+            assignment (object):
+                assignment whose group assignments are to be updated.
             groups (dict):
                 Dictionary of type ``{email:n}``, where ``email`` is the identifier for a student
                 and ``n`` is the group-id that student is to be assigned to.
@@ -73,26 +73,26 @@ class Groups(webapp2.RequestHandler):
             # Error if so
             utils.error('Groups information not available.', handler=self)
         else:
-            # Loop over the students in the passed in section
-            for student in section.students:
+            # Loop over the students in the passed in assignment
+            for student in assignment.students:
                 # Check if the current student's email is in the groups
                 if student.email in groups:
                     # Set the student's group number to the index of the group
                     student.group = int(groups[student.email])
                     # And then grab that group model from the database
-                    group = model.Group.get_by_id(student.group, parent=section.key)
+                    group = model.Group.get_by_id(student.group, parent=assignment.key)
 
                     # -------------------Fix group allocation bug
                     group_id = 1
-                    while (group_id <= section.groups):
-                        pre_group = model.Group.get_by_id(group_id, parent=section.key)
+                    while (group_id <= assignment.groups):
+                        pre_group = model.Group.get_by_id(group_id, parent=assignment.key)
                         if not pre_group:
                             group_id += 1
                             continue
                         if student.email in pre_group.members:
                             break
                         group_id += 1
-                    if group_id <= section.groups and group_id != student.group:
+                    if group_id <= assignment.groups and group_id != student.group:
                         pre_group.members.remove(student.email)
                         pre_group.size = len(pre_group.members)
                         pre_group.put()
@@ -101,7 +101,7 @@ class Groups(webapp2.RequestHandler):
                     # Double check that it actually exists
                     if not group:
                         # And create it if not, giving it the proper number
-                        group = model.Group(parent=section.key, id=student.group)
+                        group = model.Group(parent=assignment.key, id=student.group)
                         group.number = student.group
                     # end
                     # Now check if the student is listed in the correct group
@@ -117,8 +117,8 @@ class Groups(webapp2.RequestHandler):
                         # end
                         # end
             # end
-            # Commit the changes to the section and log it
-            section.put()
+            # Commit the changes to the assignment and log it
+            assignment.put()
             utils.log('Groups updated.', handler=self)
             # end
 
@@ -138,28 +138,28 @@ class Groups(webapp2.RequestHandler):
 
         # Otherwise, create a logout url
         logout_url = users.create_logout_url(self.request.uri)
-        # And get the course and section names from the page
+        # And get the course and assignment names from the page
         course_name = self.request.get('course')
-        selected_section_name = self.request.get('section')
-        # Grab all the courses and sections for the logged in grader
-        template_values = utils.get_template_all_courses_and_sections(grader,
+        selected_assignment_name = self.request.get('assignment')
+        # Grab all the courses and assignments for the logged in grader
+        template_values = utils.get_template_all_courses_and_assignments(grader,
                                                                       course_name.upper(),
-                                                                      selected_section_name.upper())
-        # Now check that the section from the webpage actually corresponded
-        # to an actual section in this course, and that the template was set
-        if 'selectedSectionObject' in template_values:
-            # If so, grab that section from the template values
-            current_section = template_values['selectedSectionObject']
-            # Check that the current section has at least one round
-            if current_section.rounds > 0:
+                                                                      selected_assignment_name.upper())
+        # Now check that the assignment from the webpage actually corresponded
+        # to an actual assignment in this course, and that the template was set
+        if 'selectedassignmentObject' in template_values:
+            # If so, grab that assignment from the template values
+            current_assignment = template_values['selectedassignmentObject']
+            # Check that the current assignment has at least one round
+            if current_assignment.rounds > 0:
 
                 # Grab the responses from the initial question
                 response = model.Response.query(
-                    ancestor=model.Round.get_by_id(1, parent=current_section.key).key).fetch()
+                    ancestor=model.Round.get_by_id(1, parent=current_assignment.key).key).fetch()
 
                 no_answer_students = []
-                # And loop over the students in this section
-                for stu in current_section.students:
+                # And loop over the students in this assignment
+                for stu in current_assignment.students:
                     flag = True
                     # Loop over the responses
                     for res in response:
@@ -177,7 +177,7 @@ class Groups(webapp2.RequestHandler):
                 # Add the responses and current group to the template values
                 template_values['no_answer_students'] = no_answer_students
                 template_values['responses'] = response
-                template_values['group'] = current_section.groups
+                template_values['group'] = current_assignment.groups
                 # end
         # end
         # Set the template and render the page
@@ -200,8 +200,8 @@ class Groups(webapp2.RequestHandler):
             return self.redirect('/')
         # end
 
-        # So first we need to get at the course and section
-        course, section = utils.get_course_and_section_objs(self.request, grader)
+        # So first we need to get at the course and assignment
+        course, assignment = utils.get_course_and_assignment_objs(self.request, grader)
         # Grab the action from the page
         action = self.request.get('action')
         # Check that the action was actually supplied
@@ -215,12 +215,12 @@ class Groups(webapp2.RequestHandler):
                 # If add, grab the number of groups from the page
                 group_count = int(self.request.get('groups'))
                 # And modify the database
-                self.modify_group_count(section, group_count)
+                self.modify_group_count(assignment, group_count)
             elif action == 'update':
                 # For update, grab the group settings from the page
                 groups = json.loads(self.request.get('groups'))
                 # And modify the database
-                self.update_groups(section, groups)
+                self.update_groups(assignment, groups)
             else:
                 # Send an error if a different action is supplied
                 utils.error('Unknown action' + action if action else 'None', handler=self)

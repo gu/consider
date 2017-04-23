@@ -71,7 +71,7 @@ class TestServer:
         else:
             return False
 
-#config section
+#config assignment
 temp_datastore_path ="/tmp/test-tmp-datastore"
 #==================[START: initial checks]==================
 #check to make sure we are running tests on a valid platform
@@ -109,7 +109,7 @@ else:
 
 #==================[END: initial checks]==================
 #==================[START: set up test server]==================
-#in this section, we start a local development server
+#in this assignment, we start a local development server
 
 test_server = TestServer(temp_datastore_path,path_to_consider)
 test_server.startServer()
@@ -120,7 +120,7 @@ test_server.startServer()
 
 #==================[START: prepare to run tests]==================
 
-#in this section we define methods for use in the test cases
+#in this assignment we define methods for use in the test cases
 #most of these test methods are implemented via webscraping the local dev server
 
 import requests
@@ -158,10 +158,10 @@ def courses_post(datainput):
     sleep(0.15)
     return r
 
-def sections_post(datainput):
-    r = session.post("http://localhost:8080/sections",data=datainput)
+def assignments_post(datainput):
+    r = session.post("http://localhost:8080/assignments",data=datainput)
     if not ("200" or "401" in str(r)):
-        print("error: sections post request responded with "+str(r))
+        print("error: assignments post request responded with "+str(r))
     sleep(0.15)
     return r
 
@@ -187,7 +187,7 @@ def student_rounds_post(datainput):
     return r
 
 def student_rounds_get(key):
-    return session.get("http://localhost:8080/student_rounds?section="+key)
+    return session.get("http://localhost:8080/student_rounds?assignment="+key)
 
 def groups_post(datainput):
     r = session.post("http://localhost:8080/groups",data=datainput)
@@ -197,41 +197,41 @@ def groups_post(datainput):
     return r
 
 def studentRespond(response,key):
-    data={"option":"option1","comm":response,"section":key}
+    data={"option":"option1","comm":response,"assignment":key}
     return student_rounds_post(data)
 
-def addSection(course_name,section_name):
-    data={"course":course_name,"section":section_name,"action":"add"}
-    return sections_post(data)
+def addAssignment(course_name,assignment_name):
+    data={"course":course_name,"assignment":assignment_name,"action":"add"}
+    return assignments_post(data)
 
-def modifyNumberOfGroups(num,course_name,section_name):
-    data={"groups":num,"course":course_name,"section":section_name,"action":"add"}
+def modifyNumberOfGroups(num,course_name,assignment_name):
+    data={"groups":num,"course":course_name,"assignment":assignment_name,"action":"add"}
     return groups_post(data)
 
-def addInitialQuestion(duetime,question,numberQuestions,course,section):
+def addInitialQuestion(duetime,question,numberQuestions,course,assignment):
     options = ["test question"]*numberQuestions
     options = str(options).replace("'",'"')
-    data={"course":course.upper(),"section":section.upper(),"time":duetime,"question":question,"number":numberQuestions,"round":"1","roundType":"initial","startBuffer":"0","options":options,"action":"add"}
+    data={"course":course.upper(),"assignment":assignment.upper(),"time":duetime,"question":question,"number":numberQuestions,"round":"1","roundType":"initial","startBuffer":"0","options":options,"action":"add"}
     return rounds_post(data)
 
-def addDiscussionRounds(num,duration,course,section):
-    data = {"total_discussions":num,"duration":duration,"course":course,"section":section,"action":"add_disc"}
+def addDiscussionRounds(num,duration,course,assignment):
+    data = {"total_discussions":num,"duration":duration,"course":course,"assignment":assignment,"action":"add_disc"}
     return rounds_post(data)
 
-def deleteDiscussionRound(round_id,course,section):
-    data = {"round_id":round_id,"course":course,"section":section,"action":"delete"}
+def deleteDiscussionRound(round_id,course,assignment):
+    data = {"round_id":round_id,"course":course,"assignment":assignment,"action":"delete"}
     return rounds_post(data)
 
-def changeDiscussionRound(round_id,course,section,description,deadline,starttime):
-    data = {"round_id":round_id,"course":course,"section":section,"description":description,"roundType":"discussion","action":"change","deadline":deadline,"start_time":starttime}
+def changeDiscussionRound(round_id,course,assignment,description,deadline,starttime):
+    data = {"round_id":round_id,"course":course,"assignment":assignment,"description":description,"roundType":"discussion","action":"change","deadline":deadline,"start_time":starttime}
     return rounds_post(data)
 
 def addCourse(course_name):
     data={"name":course_name,"action":"add"}
     return courses_post(data)
 
-def addStudents(emails,course,section):
-    data = {"emails":str(emails).replace("'",'"'),"course":course,"section":section,"action":"add"}
+def addStudents(emails,course,assignment):
+    data = {"emails":str(emails).replace("'",'"'),"course":course,"assignment":assignment,"action":"add"}
     return students_post(data)
 
 def removeStudent(email):
@@ -262,8 +262,8 @@ def console(script):
     ans = requests.post("http://localhost:8000/console",data=data)
     return ans.text.strip()
 
-#goes to the student home page and gets a list of keys for displayed sections
-def get_section_key_list():
+#goes to the student home page and gets a list of keys for displayed assignments
+def get_assignment_key_list():
     answer = []
     req = session.get("http://localhost:8080/student_home")
     reg = re.compile("redirect.*btn-block")
@@ -299,24 +299,24 @@ def get_total_response_count():
     result = console(script)
     return int(result)
 
-def get_section_count(instructor_email):
-    script = "from src import model\ninstructor = model.Instructor.query(model.Instructor.email=='"+instructor_email+"').fetch()[0]\nsections = model.Section.query(ancestor=instructor.key).fetch()\nprint(len(sections))"
+def get_assignment_count(instructor_email):
+    script = "from src import model\ninstructor = model.Instructor.query(model.Instructor.email=='"+instructor_email+"').fetch()[0]\nassignments = model.Assignment.query(ancestor=instructor.key).fetch()\nprint(len(assignments))"
     result = console(script)
     return int(result)
 
-def get_group_count(instructor_email,course,section):
+def get_group_count(instructor_email,course,assignment):
     script = "from src import model\n"
     script += "instructor = model.Instructor.query(model.Instructor.email=='"+instructor_email+"').fetch()[0]\n"
-    script += "sections = model.Section.query(ancestor=instructor.key).fetch()\n"
-    script += "for s in sections:\n"
-    script += " if s.name == '"+section.upper()+"':\n"
+    script += "assignments = model.Assignment.query(ancestor=instructor.key).fetch()\n"
+    script += "for s in assignments:\n"
+    script += " if s.name == '"+assignment.upper()+"':\n"
     script += "  print(s.groups)\n"
     script += "  break\n"
     result = console(script)
     return int(result)
 
-def get_total_section_count():
-    script = "from src import model\nsections = model.Section.query().fetch()\nprint(len(sections))"
+def get_total_assignment_count():
+    script = "from src import model\nassignments = model.Assignment.query().fetch()\nprint(len(assignments))"
     result = console(script)
     return int(result)
 
@@ -342,9 +342,9 @@ def toggleCourse(coursename):
     data = {'action':'toggle','name':coursename}
     courses_post(data)
 
-def toggleSection(coursename,sectionname):
-    data = {'action':'toggle','course':coursename,'section':sectionname}
-    sections_post(data)
+def toggleAssignment(coursename,assignmentname):
+    data = {'action':'toggle','course':coursename,'assignment':assignmentname}
+    assignments_post(data)
 
 def isInstructorActive(email):
     script = "from src import model\ninstructor = model.Instructor.query(model.Instructor.email=='"+email+"').fetch()[0]\nprint(instructor.is_active)"
@@ -366,22 +366,22 @@ def isCourseActive(name):
     else:
         print("error: could not retrieve course")
 
-def isSectionActive(coursename,sectionname):
-    script = "from src import model\ncourse = model.Course.query(model.Course.name=='"+coursename.upper()+"').fetch()[0]\nsection = model.Section.query(ancestor=course.key).fetch()\nfor sec in section:\n if (sec.name == '"+sectionname.upper()+"'):\n  print(sec.is_active)\n"
+def isAssignmentActive(coursename,assignmentname):
+    script = "from src import model\ncourse = model.Course.query(model.Course.name=='"+coursename.upper()+"').fetch()[0]\nassignment = model.Assignment.query(ancestor=course.key).fetch()\nfor sec in assignment:\n if (sec.name == '"+assignmentname.upper()+"'):\n  print(sec.is_active)\n"
     result = console(script)
     if "True" in result:
         return True
     elif "False" in result:
         return False
     else:
-        print("error: could not retrieve section")
+        print("error: could not retrieve assignment")
 
-def endCurrentRound(course,section):
-    data={"action":"end-current-round","course":course,"section":section}
+def endCurrentRound(course,assignment):
+    data={"action":"end-current-round","course":course,"assignment":assignment}
     r = rounds_post(data)
 
-def startRounds(course,section,):
-    data={"action":"start","course":course,"section":section}
+def startRounds(course,assignment,):
+    data={"action":"start","course":course,"assignment":assignment}
     rounds_post(data)
 
 def getDeadline(round_id):
@@ -403,10 +403,10 @@ def getStarttime(round_id):
     return console(script)
 
 #returns 0 if no round is current
-def getCurrentRoundNum(section):
+def getCurrentRoundNum(assignment):
     script = "from src import model\n"
-    script += "sections = model.Section.query(model.Section.name=='"+section.upper()+"').fetch()[0]\n"
-    script += "print(sections.current_round)\n"
+    script += "assignments = model.Assignment.query(model.Assignment.name=='"+assignment.upper()+"').fetch()[0]\n"
+    script += "print(assignments.current_round)\n"
     ans = console(script)
     if ans == "": ans = "0"
     return int(console(script))
@@ -435,20 +435,20 @@ def canToggleCourse(coursename):
     afterToggle2 = isCourseActive(coursename)
     return (afterToggle != afterToggle2)
 
-def canToggleSection(coursename,sectionname):
-    toggleSection(coursename,sectionname)
-    afterToggle = isSectionActive(coursename,sectionname)
+def canToggleAssignment(coursename,assignmentname):
+    toggleAssignment(coursename,assignmentname)
+    afterToggle = isAssignmentActive(coursename,assignmentname)
     #we toggle twice so the instructor goes back to the original toggle state
-    toggleSection(coursename,sectionname)
-    afterToggle2 = isSectionActive(coursename,sectionname)
+    toggleAssignment(coursename,assignmentname)
+    afterToggle2 = isAssignmentActive(coursename,assignmentname)
     return (afterToggle != afterToggle2)
 
 
-inst_directories = ["/courses","/group_responses","/groups","/responses","/rounds","/sections","/students"]
+inst_directories = ["/courses","/group_responses","/groups","/responses","/rounds","/assignments","/students"]
 std_directories = ["/student_home","/student_rounds"]
 admin_directories = ["/admin"]
 #leave a user type as None if you don't want to run tests for that user type
-def testGET(admin,instructor,student,course,section,situation_string):
+def testGET(admin,instructor,student,course,assignment,situation_string):
     print("\trunning GET tests for the situation <"+situation_string+">")
     #instructor GET testing
     if instructor is not None:
@@ -473,9 +473,9 @@ def testGET(admin,instructor,student,course,section,situation_string):
         login(student,False)
         #TEST to make sure student gets 200 when expected
         for dir in std_directories:
-            #we need to treat /student_rounds differently because the GET request url contains the section key
+            #we need to treat /student_rounds differently because the GET request url contains the assignment key
             if dir == "/student_rounds":
-                keys = get_section_key_list()
+                keys = get_assignment_key_list()
                 if len(keys) > 0:
                     r = student_rounds_get(keys[0])
                     if not "200" in str(r):
@@ -519,7 +519,7 @@ def testGET(admin,instructor,student,course,section,situation_string):
 
 
 
-import admin, students, courses, sections, rounds, groups, GETtests   
+import admin, students, courses, assignments, rounds, groups, GETtests   
     
    
 

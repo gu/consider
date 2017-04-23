@@ -33,30 +33,30 @@ class GraderInfo(ndb.Model):
     group = ndb.IntegerProperty(default=0)
     """ Integer. The group this grader is part of. """
 
-class Section(ndb.Model):
+class Assignment(ndb.Model):
     """
-    .. _Section:
+    .. _Assignment:
 
-    An object to represent section information in the datastore.
+    An object to represent assignment information in the datastore.
 
     Child of the `Course`_ object. Parent of `Round`_\ , `Group`_\ , `Response`_\ .
     """
     name = ndb.StringProperty(required=True)
     """ String. Must be non-empty and unique within a course. """
     groups = ndb.IntegerProperty(default=0, indexed=False)
-    """ Integer. Number of groups in this section. (default: 0) """
+    """ Integer. Number of groups in this assignment. (default: 0) """
     current_round = ndb.IntegerProperty(default=0, indexed=False)
     """ Integer. Index of the current round. (default: 0) """
     rounds = ndb.IntegerProperty(default=0, indexed=False)
-    """ Integer. Number of rounds for this section. (default: 0)"""
+    """ Integer. Number of rounds for this assignment. (default: 0)"""
     students = ndb.StructuredProperty(StudentInfo, repeated=True)
-    """ List of `StudentInfo`_ representing all the `Student`_ entities in this section. """
+    """ List of `StudentInfo`_ representing all the `Student`_ entities in this assignment. """
     graders = ndb.StructuredProperty(GraderInfo, repeated=True)
     """ new grader code """
     is_active = ndb.BooleanProperty(default=True, indexed=False)
-    """ Boolean. Indicates if this section is active or not. """
+    """ Boolean. Indicates if this assignment is active or not. """
     is_anonymous = ndb.BooleanProperty(default=True, indexed=False)
-    """ Boolean. If ``True``, discussions in this `Section`_ are anonymous; if ``False``, identities are revealed."""
+    """ Boolean. If ``True``, discussions in this `Assignment`_ are anonymous; if ``False``, identities are revealed."""
     has_rounds = ndb.BooleanProperty(default=True, indexed=False)
     """ Boolean. If ``True``, asynchronous, rounds-based discussion, else sequential """
     export_info = ndb.StringProperty(required=False) # FIXME What is this and why is it needed? Used in HTML export

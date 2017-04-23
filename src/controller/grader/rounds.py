@@ -67,14 +67,14 @@ def get_new_times(start, num, duration, delay, start_buffer):
 
 # end get_new_times
 
-def copy_summary(section, rounds, num_of_rounds):
+def copy_summary(assignment, rounds, num_of_rounds):
     summary = None
     # First, check if there's even a summary round to copy
     if rounds[-1].description == 'summary':
         # If so, create a new summary round with those properties
         # But change it to be the last round after adding num_of_rounds
         summary_round_num = rounds[-1].number + num_of_rounds
-        summary = model.Round(parent=section.key, id=summary_round_num)
+        summary = model.Round(parent=assignment.key, id=summary_round_num)
         # Now copy over all the pertinent summary information
         summary.starttime = rounds[-1].starttime
         summary.deadline = rounds[-1].deadline
@@ -90,14 +90,14 @@ def copy_summary(section, rounds, num_of_rounds):
 
 # end copy_summary
 
-def update_section_rounds(num, section):
-    # Update the section rounds attribute if necessary
-    if num != section.rounds:
-        section.rounds = num
-        section.put()
+def update_assignment_rounds(num, assignment):
+    # Update the assignment rounds attribute if necessary
+    if num != assignment.rounds:
+        assignment.rounds = num
+        assignment.put()
 
 
-# end update_section_rounds
+# end update_assignment_rounds
 
 
 def get_duration(start, end):
@@ -140,10 +140,10 @@ def add_lead_in(round_obj, rounds):
 
 # end add_lead_in
 
-def create_new_rounds(section, rounds, num_of_rounds, duration, buffer_bw_rounds, type):
+def create_new_rounds(assignment, rounds, num_of_rounds, duration, buffer_bw_rounds, type):
     # Now grab the current last round number
     current_last_round = rounds[-1].number
-    # We need the end time of the last round currently in this section
+    # We need the end time of the last round currently in this assignment
     last_time = rounds[-1].deadline
     # And grab the start buffer from the previous round
     start_buffer = rounds[-1].buffer_time
@@ -156,7 +156,7 @@ def create_new_rounds(section, rounds, num_of_rounds, duration, buffer_bw_rounds
         # And increment the current round for this iteration
         current_last_round += 1
         # Create a new rounds object
-        new_round = model.Round(parent=section.key, id=current_last_round)
+        new_round = model.Round(parent=assignment.key, id=current_last_round)
         # Set the starttime and deadline
         new_round.starttime = start_times[i]
         new_round.deadline = end_times[i]
@@ -232,33 +232,33 @@ class Rounds(webapp2.RequestHandler):
 
         # Now create a logout url
         logout_url = users.create_logout_url(self.request.uri)
-        # Grab the course and section name from the webpage
+        # Grab the course and assignment name from the webpage
         course_name = self.request.get('course')
-        selected_section_name = self.request.get('section')
-        # And get all the courses and sections for this grader
-        template_values = utils.get_template_all_courses_and_sections(grader, course_name.upper(),
-                                                                      selected_section_name.upper())
+        selected_assignment_name = self.request.get('assignment')
+        # And get all the courses and assignments for this grader
+        template_values = utils.get_template_all_courses_and_assignments(grader, course_name.upper(),
+                                                                      selected_assignment_name.upper())
         # Add the name of the current/local timezone to the template.
         template_values['tz'] = utils.tzname()
-        # Now check that the section from the webpage actually corresponded
-        # to an actual section in this course, and that the template was set
-        if 'selectedSectionObject' in template_values:
-            # If so, grab that section from the template values
-            current_section = template_values['selectedSectionObject']
+        # Now check that the assignment from the webpage actually corresponded
+        # to an actual assignment in this course, and that the template was set
+        if 'selectedassignmentObject' in template_values:
+            # If so, grab that assignment from the template values
+            current_assignment = template_values['selectedassignmentObject']
             # Set the current active round
-            template_values['activeRound'] = current_section.current_round
+            template_values['activeRound'] = current_assignment.current_round
             # Send the current time stamp back to the view to do comparisons with
             template_values['now'] = datetime.datetime.now()
-            # And grab all the rounds for this section
-            # rounds = model.Round.query(ancestor=current_section.key).filter(model.Round.type != 4).fetch()
-            rounds = model.Round.fetch_real_rounds(current_section.key)
+            # And grab all the rounds for this assignment
+            # rounds = model.Round.query(ancestor=current_assignment.key).filter(model.Round.type != 4).fetch()
+            rounds = model.Round.fetch_real_rounds(current_assignment.key)
             # Double check that there are actually rounds already created
             if rounds:
                 # And set the template values
                 template_values['rounds'] = rounds
                 # Create an empty list to hold the discussion rounds
                 discussion_rounds = []
-                # And loop over all of the rounds for this section
+                # And loop over all of the rounds for this assignment
                 for r in rounds:
                     # Set the initial question
                     if r.number == 1:
@@ -278,14 +278,14 @@ class Rounds(webapp2.RequestHandler):
             # Check to see if the summary round was set in the template
             if 'summaryQuestion' in template_values:
                 # If so, set the next round to the total number of rounds
-                template_values['nextRound'] = current_section.rounds
+                template_values['nextRound'] = current_assignment.rounds
             else:
                 # Otherwise, it must be set to the number of rounds plus
                 # one (to account for the eventual summary round)
-                template_values['nextRound'] = current_section.rounds + 1
+                template_values['nextRound'] = current_assignment.rounds + 1
                 # end
-                template_values['anon'] = current_section.is_anonymous
-                template_values['round_structure'] = current_section.has_rounds
+                template_values['anon'] = current_assignment.is_anonymous
+                template_values['round_structure'] = current_assignment.has_rounds
 
         # end
         # Set the template and render the page
@@ -326,10 +326,10 @@ class Rounds(webapp2.RequestHandler):
                 buffer_bw_rounds = 0  # int(self.request.get('buffer_time'))
 
                 # Get the type based on whether it's a rounds based discussion or sequential
-                course, section = utils.get_course_and_section_objs(self.request, grader)
+                course, assignment = utils.get_course_and_assignment_objs(self.request, grader)
                 # round_type = model.Round.get_round_type(
-                #     'discussion') if section.has_rounds else model.Round.get_round_type('sequential')
-                round_type = 2 if section.has_rounds else 3
+                #     'discussion') if assignment.has_rounds else model.Round.get_round_type('sequential')
+                round_type = 2 if assignment.has_rounds else 3
                 # Send the number and duration to the add rounds function
                 self.add_rounds(num_of_rounds=num_of_rounds, duration=duration_of_round, grader=grader,
                                 type=round_type, buffer_bw_rounds=buffer_bw_rounds)
@@ -345,15 +345,15 @@ class Rounds(webapp2.RequestHandler):
                 # Simply kick off the first round
                 self.start_rounds(grader)
                 # Send mail to students
-                # Grab section object and grader email to pass to email function
-                email_course, email_section = utils.get_course_and_section_objs(self.request, grader)
+                # Grab assignment object and grader email to pass to email function
+                email_course, email_assignment = utils.get_course_and_assignment_objs(self.request, grader)
                 # Grab the message of the email
                 message = self.request.get('message')
                 # Grab the subject of the email
                 subject = self.request.get('subject')
-                to_emails = [s.email for s in email_section.students]
+                to_emails = [s.email for s in email_assignment.students]
                 utils.send_mails(to_emails, subject, message)
-                email_course.recent_section = email_section.name
+                email_course.recent_assignment = email_assignment.name
                 email_course.put()
             elif action == 'toggle_anon':
                 self.toggle_anonymity(grader)
@@ -366,32 +366,32 @@ class Rounds(webapp2.RequestHandler):
     # end post
 
     def toggle_anonymity(self, grader):
-        # So first we need to get at the course and section
-        course, section = utils.get_course_and_section_objs(self.request, grader)
-        if section:
-            section.is_anonymous = not section.is_anonymous
-            section.put()
-            utils.log('Anonymity toggled to: ' + str(section.is_anonymous))
+        # So first we need to get at the course and assignment
+        course, assignment = utils.get_course_and_assignment_objs(self.request, grader)
+        if assignment:
+            assignment.is_anonymous = not assignment.is_anonymous
+            assignment.put()
+            utils.log('Anonymity toggled to: ' + str(assignment.is_anonymous))
         else:
-            utils.error('Section not found')
+            utils.error('assignment not found')
 
     # end toggle_anonymity
 
     def toggle_round_structure(self, grader):
-        # So first we need to get at the course and section
-        course, section = utils.get_course_and_section_objs(self.request, grader)
-        if section:
-            section.has_rounds = not section.has_rounds
-            section.put()
-            utils.log('Rounds Structure toggled to: ' + str(section.has_rounds))
+        # So first we need to get at the course and assignment
+        course, assignment = utils.get_course_and_assignment_objs(self.request, grader)
+        if assignment:
+            assignment.has_rounds = not assignment.has_rounds
+            assignment.put()
+            utils.log('Rounds Structure toggled to: ' + str(assignment.has_rounds))
         else:
-            utils.error('Section not found')
+            utils.error('assignment not found')
 
     # end toggle_round_structure
 
     def add_leadin_summary(self, grader):
-        # So first we need to get at the course and section
-        course, section = utils.get_course_and_section_objs(self.request, grader)
+        # So first we need to get at the course and assignment
+        course, assignment = utils.get_course_and_assignment_objs(self.request, grader)
 
         # Before anything, we need to check that the deadline is in the future
         if datetime.datetime.now() > utils.to_utc(self.request.get('time')):
@@ -401,10 +401,10 @@ class Rounds(webapp2.RequestHandler):
         # end
 
         # Build the round object
-        round_obj = self.build_round_obj(section)
+        round_obj = self.build_round_obj(assignment)
 
         # Now grab all of the rounds
-        rounds = model.Round.query(ancestor=section.key).fetch()
+        rounds = model.Round.query(ancestor=assignment.key).fetch()
         # And switch on the type to create our start time
         if round_obj.description == 'initial':
             round_obj.type = model.Round.get_round_type('initial')
@@ -446,23 +446,23 @@ class Rounds(webapp2.RequestHandler):
         # Now save the round to the database
         round_obj.put()
         # And grab all the rounds one last time
-        rounds = model.Round.query(ancestor=section.key).fetch()
-        # And update the section rounds attribute if necessary
-        update_section_rounds(rounds[-1].number, section)
+        rounds = model.Round.query(ancestor=assignment.key).fetch()
+        # And update the assignment rounds attribute if necessary
+        update_assignment_rounds(rounds[-1].number, assignment)
         # And send our success message
         # utils.log('Success, round added.', type='Success!', handler=self)
         utils.log('Success! Round added.', type='S', handler=self)
 
     # end add_leadin_summary
 
-    def build_round_obj(self, section):
+    def build_round_obj(self, assignment):
         # Start by grabbing the end time and round number from the page,
         # and convert the end_time from a string to a datetime object.
         # Convert the time from the local timezone to UTC for proper storage.
         end_time = utils.to_utc(self.request.get('time'))
         round_num = int(self.request.get('round'))
         # Now create our new round object
-        round_obj = model.Round(parent=section.key, id=round_num)
+        round_obj = model.Round(parent=assignment.key, id=round_num)
         # And set the deadline and round number and quiz type
         round_obj.deadline = end_time
         round_obj.number = round_num
@@ -493,13 +493,13 @@ class Rounds(webapp2.RequestHandler):
     # end build_round_obj
 
     def add_rounds(self, num_of_rounds, duration, grader, buffer_bw_rounds, type=2, quiet=False):
-        # So first we need to get at the course and section
-        course, section = utils.get_course_and_section_objs(self.request, grader)
-        # And grab all of the rounds for this section
-        rounds = model.Round.query(ancestor=section.key).fetch()
+        # So first we need to get at the course and assignment
+        course, assignment = utils.get_course_and_assignment_objs(self.request, grader)
+        # And grab all of the rounds for this assignment
+        rounds = model.Round.query(ancestor=assignment.key).fetch()
         # The view requires at least a initial question to add rounds, but check
         if not rounds:
-            # Send an error if no rounds exist for this section
+            # Send an error if no rounds exist for this assignment
             utils.error('Error! No initial question exists; cannot add new rounds yet.', handler=self)
             # And redirect
             return self.redirect('/')
@@ -514,19 +514,19 @@ class Rounds(webapp2.RequestHandler):
         # #end
 
         # Copy the summary round if it exists
-        summary = copy_summary(section, rounds, num_of_rounds)
+        summary = copy_summary(assignment, rounds, num_of_rounds)
         # If it exists, pop it off the list
         if summary:
             rounds.pop()
         # end
 
         # Now create all the new rounds
-        new_rounds = create_new_rounds(section, rounds, num_of_rounds, duration, buffer_bw_rounds, type)
+        new_rounds = create_new_rounds(assignment, rounds, num_of_rounds, duration, buffer_bw_rounds, type)
 
         # And update the summary round
         update_summary(summary, new_rounds)
-        # Now update the number of rounds attribute of the section
-        update_section_rounds(new_rounds[-1].number, section)
+        # Now update the number of rounds attribute of the assignment
+        update_assignment_rounds(new_rounds[-1].number, assignment)
 
         # Now send a success message
         if not quiet:
@@ -536,13 +536,13 @@ class Rounds(webapp2.RequestHandler):
     # end add_rounds
 
     def delete_round(self, grader, round_id):
-        # So first we need to get at the course and section
-        course, section = utils.get_course_and_section_objs(self.request, grader)
-        # And grab all of the rounds for this section
-        rounds = model.Round.query(ancestor=section.key).fetch()
+        # So first we need to get at the course and assignment
+        course, assignment = utils.get_course_and_assignment_objs(self.request, grader)
+        # And grab all of the rounds for this assignment
+        rounds = model.Round.query(ancestor=assignment.key).fetch()
         # The view requires at least a initial question to add rounds, but check
         if not rounds:
-            # Send an error if no rounds exist for this section
+            # Send an error if no rounds exist for this assignment
             utils.error('Error! No initial question exists; cannot add new rounds yet.', handler=self)
             # And redirect
             return self.redirect('/')
@@ -557,7 +557,7 @@ class Rounds(webapp2.RequestHandler):
             rounds[-2].put().delete()
             rounds.pop(-2)
             # And copy the summary round and update the times
-            summary = copy_summary(section, rounds, -1)
+            summary = copy_summary(assignment, rounds, -1)
             # Remove the old summary from the list
             rounds.pop()
             update_summary(summary, rounds)
@@ -568,21 +568,21 @@ class Rounds(webapp2.RequestHandler):
 
         # Since we shifted rounds forward, remove the last round from the list
         rounds.pop()
-        # And update the section
-        update_section_rounds(rounds[-1].number, section)
+        # And update the assignment
+        update_assignment_rounds(rounds[-1].number, assignment)
         # And send a success message
         utils.log('Successfully deleted round {0}'.format(round_id), type='Success!', handler=self)
 
     # end delete_rounds
 
     def edit_round(self, grader, round_id):
-        # So first we need to get at the course and section
-        course, section = utils.get_course_and_section_objs(self.request, grader)
-        # And grab all of the rounds for this section
-        rounds = model.Round.query(ancestor=section.key).fetch()
+        # So first we need to get at the course and assignment
+        course, assignment = utils.get_course_and_assignment_objs(self.request, grader)
+        # And grab all of the rounds for this assignment
+        rounds = model.Round.query(ancestor=assignment.key).fetch()
         # The view requires at least a initial question to add rounds, but check
         if not rounds:
-            # Send an error if no rounds exist for this section
+            # Send an error if no rounds exist for this assignment
             utils.error('Error! No initial question exists; cannot add new rounds yet.', handler=self)
             # And redirect
             return self.redirect('/')
@@ -650,24 +650,24 @@ class Rounds(webapp2.RequestHandler):
     # end
 
     def start_rounds(self, grader):
-        # So first we need to get at the course and section
-        course, section = utils.get_course_and_section_objs(self.request, grader)
-        # And grab all of the rounds for this section
-        rounds = model.Round.query(ancestor=section.key).fetch()
+        # So first we need to get at the course and assignment
+        course, assignment = utils.get_course_and_assignment_objs(self.request, grader)
+        # And grab all of the rounds for this assignment
+        rounds = model.Round.query(ancestor=assignment.key).fetch()
         # The view requires at least a initial question to add rounds, but check
         if not rounds:
-            # Send an error if no rounds exist for this section
+            # Send an error if no rounds exist for this assignment
             utils.error('Error! No initial question exists; cannot start yet.', handler=self)
             # And redirect
             return self.redirect('/')
         # end
 
         # Now simply turn on the first round
-        section.current_round = 1
-        section.put()
+        assignment.current_round = 1
+        assignment.put()
 
         # Add the dummy read only round if it's a rounds based discussion
-        if section.has_rounds:
+        if assignment.has_rounds:
             self.add_rounds(num_of_rounds=1, duration=0, grader=grader,
                             type=model.Round.get_round_type('readonly'),
                             buffer_bw_rounds=0, quiet=True)
@@ -679,9 +679,9 @@ class Rounds(webapp2.RequestHandler):
 
     def end_current_round(self, grader):
         utils.log("trying to end the current round")
-        course, section = utils.get_course_and_section_objs(self.request, grader)
-        current_round = utils.get_current_round_object(section)
-        next_round = utils.get_next_round_object(section)
+        course, assignment = utils.get_course_and_assignment_objs(self.request, grader)
+        current_round = utils.get_current_round_object(assignment)
+        next_round = utils.get_next_round_object(assignment)
         if not current_round:
             utils.log("current round is empty!")
             return
@@ -692,8 +692,8 @@ class Rounds(webapp2.RequestHandler):
         if next_round:
             next_round.starttime = datetime.datetime.now()
             next_round.put()
-            section.current_round = next_round.number
-            section.put()
+            assignment.current_round = next_round.number
+            assignment.put()
 
             # end end_current_round
 

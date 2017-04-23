@@ -21,16 +21,16 @@ from src import model, utils
 
 class Graders(webapp2.RequestHandler):
     """
-    API to add a grader to the given section and course.
+    API to add a grader to the given assignment and course.
     """
 
-    def add_graders(self, section, emails):
+    def add_graders(self, assignment, emails):
         """
-        Adds one or more graders to the given section in the datastore.
+        Adds one or more graders to the given assignment in the datastore.
 
         Args:
-            section (object):
-                Section to which the studetns are to be added.
+            assignment (object):
+                assignment to which the studetns are to be added.
             emails (str):
                 Emails (IDs) of graders to be added.
 
@@ -39,15 +39,15 @@ class Graders(webapp2.RequestHandler):
         for email in emails:
             # Transform the supplied email to lowercase
             email = email.lower()
-            # Then make a list of all the emails currently in the section
-            grader_emails = [s.email for s in section.graders]
-            # Check that the supplied email isn't already in the section
+            # Then make a list of all the emails currently in the assignment
+            grader_emails = [s.email for s in assignment.graders]
+            # Check that the supplied email isn't already in the assignment
             if email not in grader_emails:
-                # And add them to the list of students for the section
+                # And add them to the list of students for the assignment
                 info = model.GraderInfo()
                 utils.log(info)
                 info.email = email
-                section.graders.append(info)
+                assignment.graders.append(info)
             # end
             # Now grab the grader from the database
             grader = model.Grader.get_by_id(email)
@@ -57,27 +57,27 @@ class Graders(webapp2.RequestHandler):
                 grader = model.Grader(id=email)
                 grader.email = email
             # end
-            # Now check if the current grader is subscribed to this section
-            if section.key not in grader.sections:
+            # Now check if the current grader is subscribed to this assignment
+            if assignment.key not in grader.assignments:
                 # And add them if they weren't already
-                grader.sections.append(section.key)
+                grader.assignments.append(assignment.key)
             # end
             # Save the grader data back to the database
             grader.put()
         # end
-        # Now save all the section data back to the database and log it
-        section.put()
-        utils.log('Graders added to Section ' + str(section), type='Success!')
+        # Now save all the assignment data back to the database and log it
+        assignment.put()
+        utils.log('Graders added to assignment ' + str(assignment), type='Success!')
 
     # end add_graders
 
-    def remove_grader(self, section, email):
+    def remove_grader(self, assignment, email):
         """
-        Removes a specific graders from the given section.
+        Removes a specific graders from the given assignment.
 
         Args:
-            section (object):
-                Section from which the grader is to be removed.
+            assignment (object):
+                assignment from which the grader is to be removed.
             email (str):
                 Email (ID) of the grader to be removed.
 
@@ -89,19 +89,19 @@ class Graders(webapp2.RequestHandler):
             # And error if not
             utils.error('Grader does not exist!', handler=self)
         else:
-            # Create a new list for the section removing the grader
-            section.graders = [s for s in section.graders if s.email != email]  # TODO better? use remove?
-            # Check if the grader is enrolled in this section
-            if section.key in grader.sections:
+            # Create a new list for the assignment removing the grader
+            assignment.graders = [s for s in assignment.graders if s.email != email]  # TODO better? use remove?
+            # Check if the grader is enrolled in this assignment
+            if assignment.key in grader.assignments:
                 # And remove them if so
-                grader.sections.remove(section.key)
+                grader.assignments.remove(assignment.key)
             # end
-            # And save both the grader and section back to the db and log it
+            # And save both the grader and assignment back to the db and log it
             grader.put()
-            section.put()
+            assignment.put()
             utils.log(
-                'Grader {0} has been removed from Section {1}'.format(str(grader),
-                                                                       str(section)), handler=self, type='Success!')
+                'Grader {0} has been removed from assignment {1}'.format(str(grader),
+                                                                       str(assignment)), handler=self, type='Success!')
             # end
 
     # end remove_grader
@@ -116,27 +116,27 @@ class Graders(webapp2.RequestHandler):
             # Send them home and short circuit all other logic
             return self.redirect('/')
         # end
-        # So first we need to get at the course and section
-        course, section = utils.get_course_and_section_objs(self.request, instructor)
+        # So first we need to get at the course and assignment
+        course, assignment = utils.get_course_and_assignment_objs(self.request, instructor)
         # And grab the action from the page
         action = self.request.get('action')
         # Check that the action was actually supplied
         print(action)
         if not action:
             # Error if not
-            utils.error('Invalid arguments: course_name or section_name or action is null', handler=self)
+            utils.error('Invalid arguments: course_name or assignment_name or action is null', handler=self)
         else:
             # Now switch on the action
             if action == 'add':
                 # Grab a list of the emails from the page
                 emails = json.loads(self.request.get('emails'))
                 # And create new graders from that list
-                self.add_graders(section, emails)
+                self.add_graders(assignment, emails)
             elif action == 'remove':
                 # Grab the email from the page to remove
                 email = self.request.get('email').lower()
                 # And remove it
-                self.remove_grader(section, email)
+                self.remove_grader(assignment, email)
             else:
                 # Send an error if any other action is supplied
                 utils.error('Unexpected action: ' + action, handler=self)
@@ -158,12 +158,12 @@ class Graders(webapp2.RequestHandler):
 
         # Otherwise, create a logout url
         logout_url = users.create_logout_url(self.request.uri)
-        # Get the course and section name from the webpage
+        # Get the course and assignment name from the webpage
         course_name = self.request.get('course')
-        selected_section_name = self.request.get('section')
+        selected_assignment_name = self.request.get('assignment')
         # And start building the template values
-        template_values = utils.get_template_all_courses_and_sections(instructor, course_name.upper(),
-                                                                      selected_section_name.upper())
+        template_values = utils.get_template_all_courses_and_assignments(instructor, course_name.upper(),
+                                                                      selected_assignment_name.upper())
         template_values['logouturl'] = logout_url
         from src import config
         template_values['documentation'] = config.DOCUMENTATION

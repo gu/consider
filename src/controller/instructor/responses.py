@@ -19,7 +19,7 @@ from src import model, utils
 
 class Responses(webapp2.RequestHandler):
     """
-    API to retrieve and display responses for each section, tabbed into different rounds.
+    API to retrieve and display responses for each assignment, tabbed into different rounds.
     """
 
     def get(self):
@@ -35,34 +35,34 @@ class Responses(webapp2.RequestHandler):
 
         # Create logout url
         logout_url = users.create_logout_url(self.request.uri)
-        # And grab the course and section name from the page
+        # And grab the course and assignment name from the page
         course_name = self.request.get('course')
-        selected_section_name = self.request.get('section')
-        # And grab all the other courses and sections for this instructor
-        template_values = utils.get_template_all_courses_and_sections(
-            instructor, course_name, selected_section_name)
-        # Now check that the section from the webpage actually corresponded
-        # to an actual section in this course, and that the template was set
-        if 'selectedSectionObject' in template_values:
-            # If so, grab that section from the template values
-            current_section = template_values['selectedSectionObject']
+        selected_assignment_name = self.request.get('assignment')
+        # And grab all the other courses and assignments for this instructor
+        template_values = utils.get_template_all_courses_and_assignments(
+            instructor, course_name, selected_assignment_name)
+        # Now check that the assignment from the webpage actually corresponded
+        # to an actual assignment in this course, and that the template was set
+        if 'selectedassignmentObject' in template_values:
+            # If so, grab that assignment from the template values
+            current_assignment = template_values['selectedassignmentObject']
             # And set the round
-            template_values['round'] = current_section.rounds
+            template_values['round'] = current_assignment.rounds
             # Create a new dict for the responses
             resp = {}
             # And loop over the number of rounds (indexed at 1 for initial)
-            for i in range(1, current_section.rounds + 1):
+            for i in range(1, current_assignment.rounds + 1):
                 # if seq. discussion and round==2, grab all the groups
-                if not current_section.has_rounds and i == 2:
+                if not current_assignment.has_rounds and i == 2:
                     # extract all responses in each group
-                    groups = model.Group.query(ancestor=current_section.key).fetch()
+                    groups = model.Group.query(ancestor=current_assignment.key).fetch()
                     all_seq_responses = []
                     for g in groups:
                         seq_responses = model.SeqResponse.query(ancestor=g.key).order(model.SeqResponse.index).fetch()
                         all_seq_responses += seq_responses
                     template_values['seq_responses'] = all_seq_responses
                 else:
-                    round_i = model.Round.get_by_id(i, parent=current_section.key)
+                    round_i = model.Round.get_by_id(i, parent=current_assignment.key)
                     response = model.Response.query(ancestor=round_i.key).fetch()
                     # response is a list of all the responses for the round i
                     if response:

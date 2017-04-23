@@ -11,7 +11,7 @@ from __main__ import *
 #==================[START: run tests]==================
 
 try:
-    #set up test admin, instructor, course, section and student
+    #set up test admin, instructor, course, assignment and student
     login("test-admin@gmail.com",True)
     addInstructor("test-instructor@gmail.com")
     logout()
@@ -22,9 +22,9 @@ try:
     addCourse("TEST-COURSE")
     if (get_course_count("test-instructor@gmail.com")==1):
         print("test-course created successfully")
-    addSection("TEST-COURSE","TEST-SECTION")
-    if (get_section_count("test-instructor@gmail.com")==1):
-        print("test-section created successfully")
+    addAssignment("TEST-COURSE","TEST-SECTION")
+    if (get_assignment_count("test-instructor@gmail.com")==1):
+        print("test-assignment created successfully")
     students = ["test-student@gmail.com","test-student2@gmail.com"]
     addStudents(students,"TEST-COURSE","TEST-SECTION")
     if (get_total_student_count()>0):

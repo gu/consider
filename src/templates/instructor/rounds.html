@@ -6,7 +6,7 @@
 
 <div class="card">
 <div class="card-title">
-    <h4 class="form-signin-heading">Please select a Course and Section below:</h4>
+    <h4 class="form-signin-heading">Please select a Course and Assignment below:</h4>
 </div>
 <div class="card-body">
 <div class="row">
@@ -23,28 +23,28 @@
         {% endif %}
     </div>
     <div class="col-md-6">
-        <h4>Section</h4>
-        {% if sections %}
-            <select id="sectionSelector" class="form-control">
-                {% for section in sections %}
-                <option {% if selectedSection== section.name %}selected="selected" {% endif %}>{{section.name}}</option>
+        <h4>Assignment</h4>
+        {% if assignments %}
+            <select id="assignmentSelector" class="form-control">
+                {% for assignment in assignments %}
+                <option {% if selectedAssignment== assignment.name %}selected="selected" {% endif %}>{{assignment.name}}</option>
                 {% endfor %}
             </select>
         {% else %}
-            {{'There are no sections in this Course' if courses else 'Please select a course to see sections'}}
+            {{'There are no assignments in this Course' if courses else 'Please select a course to see assignments'}}
         {% endif %}
     </div>
 </div>
 </div>
 </div>
 
-<!--Section features: Anonymity and Rounds-based discussion-->
+<!--Assignment features: Anonymity and Rounds-based discussion-->
 <div class="card">
 <div class="card-title">
     <h4>Discussion Features</h4>
 </div>
 <div class="card-body">
-    {% if selectedSection %}
+    {% if selectedAssignment %}
     <div class="table-responsive">
         <table class="table table-striped" id="features-table">
             <thead>
@@ -62,7 +62,7 @@
                                 class="btn btn-success btn-sm"
                                 id="toggleAnonButton"
                                 name="toggleAnonButton"
-                                onclick="toggleAnon('{{ selectedCourse }}', '{{ selectedSection }}')">Toggle
+                                onclick="toggleAnon('{{ selectedCourse }}', '{{ selectedAssignment }}')">Toggle
                         </button>
                     </td>
                 {%- endif -%}
@@ -76,7 +76,7 @@
                                 class="btn btn-success btn-sm"
                                 id="toggleRoundsButton"
                                 name="toggleRoundsButton"
-                                onclick="toggleRounds('{{ selectedCourse }}', '{{ selectedSection }}')">Toggle
+                                onclick="toggleRounds('{{ selectedCourse }}', '{{ selectedAssignment }}')">Toggle
                         </button>
 
                 </td>
@@ -94,7 +94,7 @@
     <h4>Initial Question</h4>
 </div>
 <div class="card-body">
-{% if selectedSection %}
+{% if selectedAssignment %}
     {% if initialQuestion %}
         {% if initialQuestion.deadline|since_epoch > now|since_epoch %}
             <button type="button" class="btn btn-default" id="edit-initial" aria-label="Edit Question">
@@ -113,7 +113,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr {% if selectedSectionObject.current_round == 1 %} class="row-highlight" {% endif %} >
+                    <tr {% if selectedAssignmentObject.current_round == 1 %} class="row-highlight" {% endif %} >
                         <td>{{initialQuestion.number}}</td>
                         <td data-deadline="{{initialQuestion.deadline|local_time}}">{{initialQuestion.deadline|local_time}}</td>
                         <td class="question md">{{initialQuestion.quiz.question|safe}}</td>
@@ -135,7 +135,7 @@
     {% endif %}
 {% else %}
 
-<p>Select a section to continue.</p>
+<p>Select a assignment to continue.</p>
 {% endif %}
     </div>
 </div>
@@ -204,7 +204,7 @@
 
 
 {% if initialQuestion %}
-{% if selectedSectionObject.current_round == 0 %}
+{% if selectedAssignmentObject.current_round == 0 %}
 <div class="card">
     <div class="card-body">
         <div class="row">
@@ -225,7 +225,7 @@
                 <h1>Round {{activeRound}} is now active.</h1>
                 <!--TODO indicate all rounds are over when they are-->
                 <!--TODO show this button only when the app is in DEBUG mode-->
-                <button type="button" data-course="{{selectedCourse}}" data-section="{{selectedSection}}"
+                <button type="button" data-course="{{selectedCourse}}" data-assignment="{{selectedAssignment}}"
                         class="btn btn-default" id="end-current-round" aria-label="End Current Round"><span
                         class="glyphicon glyphicon-stop" aria-hidden="true"></span>End Current Round
                 </button>
@@ -254,7 +254,7 @@
                 <form class="form-horizontal" id="initialModalForm" method="post" style="text-align: center;"
                       action="/rounds">
                     <input type="hidden" name="course" value="{{selectedCourse}}" />
-                    <input type="hidden" name="section" value="{{selectedSection}}" />
+                    <input type="hidden" name="assignment" value="{{selectedAssignment}}" />
 
                     <div class="form-group">
                         <label for="endTime" class="col-sm-2 control-label">End time</label>
@@ -329,7 +329,7 @@
                 <form class="form-horizontal" id="summaryModalForm" method="post" style="text-align: center;"
                       action="/rounds">
                     <input type="hidden" name="course" value="{{selectedCourse}}" />
-                    <input type="hidden" name="section" value="{{selectedSection}}" />
+                    <input type="hidden" name="assignment" value="{{selectedAssignment}}" />
                     <input type="hidden" name="nextRound" value="{{nextRound}}" />
                     <div class="form-group">
                         <label for="endTime" class="col-sm-2 control-label">End time</label>
@@ -403,7 +403,7 @@
                 <form class="form-horizontal" id="editEmailForm" method="post" style="text-align: center;"
                       action="/rounds">
                     <input type="hidden" name="course" value="{{selectedCourse}}" />
-                    <input type="hidden" name="section" value="{{selectedSection}}" />
+                    <input type="hidden" name="assignment" value="{{selectedAssignment}}" />
                     <input type="hidden" name="action" value="start" />
 
                     <div class="form-group">

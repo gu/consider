@@ -276,11 +276,11 @@ def get_template_all_courses_and_sections(instructor, course_name, selected_sect
         # And set the name in the template values
         template_values['selectedCourse'] = course.name
         # Now try and grab the sections from the db
-        sections = model.Section.query(ancestor=course.key).fetch()
+        sections = model.Assignment.query(ancestor=course.key).fetch()
         # If there are no sections and a course name wasn't passed in
         if not sections and not course_name:
             # Grab all sections of the "default" course
-            sections = model.Section.query(ancestor=courses[0].key).fetch()
+            sections = model.Assignment.query(ancestor=courses[0].key).fetch()
         # end
         # And add them to the template values
         template_values['sections'] = sections
@@ -291,7 +291,7 @@ def get_template_all_courses_and_sections(instructor, course_name, selected_sect
             if selected_section:
                 # Try and grab that section from the database
                 selected_section = selected_section.upper()
-                section = model.Section.get_by_id(selected_section, parent=course.key)
+                section = model.Assignment.get_by_id(selected_section, parent=course.key)
             # end
             # If it wasn't found, set a default section
             if not section:
@@ -346,7 +346,7 @@ def get_course_and_section_objs(page_handler, instructor):
             error('Course {c} does not exist!'.format(c=course_name), handler=page_handler)
         else:
             # Now grab the section from the database
-            section = model.Section.get_by_id(section_name, parent=course.key)
+            section = model.Assignment.get_by_id(section_name, parent=course.key)
             # And check that it actually exists
             if not section:
                 # Error if not

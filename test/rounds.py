@@ -24,8 +24,8 @@ try:
     question = "sample question"
     numberQuestions = 4
     course = "TEST-COURSE"
-    section = "TEST-SECTION"
-    addInitialQuestion(duetime,question,numberQuestions,course,section)
+    assignment = "TEST-SECTION"
+    addInitialQuestion(duetime,question,numberQuestions,course,assignment)
     aftercount = get_total_round_count()
     if(aftercount - startcount == 1):
         print_passed(test_number)
@@ -43,8 +43,8 @@ try:
     question = "sample question"
     numberQuestions = 4
     course = "TEST-COURSE"
-    section = "TEST-SECTION"
-    addInitialQuestion(duetime,question,numberQuestions,course,section)
+    assignment = "TEST-SECTION"
+    addInitialQuestion(duetime,question,numberQuestions,course,assignment)
     aftercount = get_total_round_count()
     if(aftercount - startcount == 0):
         print_passed(test_number)
@@ -62,8 +62,8 @@ try:
     question = "sample question"
     numberQuestions = 4
     course = "TEST-COURSE"
-    section = "TEST-SECTIONXYZ"
-    addInitialQuestion(duetime,question,numberQuestions,course,section)
+    assignment = "TEST-SECTIONXYZ"
+    addInitialQuestion(duetime,question,numberQuestions,course,assignment)
     aftercount = get_total_round_count()
     if(aftercount - startcount == 0):
         print_passed(test_number)

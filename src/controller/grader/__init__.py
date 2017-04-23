@@ -6,7 +6,7 @@ from .show_responses import HtmlExport
 from .groups import Groups
 from .responses import Responses
 from .rounds import Rounds
-from .sections import Sections
+from .assignments import Assignments
 
 """ The grader class currently exists within the source code
 	but as of 12/11/16 it cannot be added to the database.  From

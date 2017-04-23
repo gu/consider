@@ -4,6 +4,6 @@ function redirect(key, group, round) {
     location.href = '/error?code=106'
   }
   else {
-    location.href = '/student_rounds?section=' + key;
+    location.href = '/student_rounds?assignment=' + key;
   }
 }

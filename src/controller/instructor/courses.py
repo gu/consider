@@ -43,7 +43,7 @@ class Courses(webapp2.RequestHandler):
             # Otherwise, create it, store it in the database, and log it
             course = model.Course(parent=instructor.key, id=course_name)
             course.name = course_name
-            course.recent_section = ""
+            course.recent_assignment = ""
             course.put()
             utils.log(course_name + ' added', type='Success!', handler=self)
 
@@ -134,8 +134,8 @@ class Courses(webapp2.RequestHandler):
         if courses:
             # Then loop over them
             for course in courses:
-                # And grab all the sections attributed to that course
-                course.sections = model.Section.query(ancestor=course.key).fetch()
+                # And grab all the assignments attributed to that course
+                course.assignments = model.Assignment.query(ancestor=course.key).fetch()
             # end
             # Add all the instructor's courses to the template values
             template_values['courses'] = courses

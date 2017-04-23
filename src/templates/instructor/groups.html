@@ -6,7 +6,7 @@
 
 <div class="card">
 <div class="card-title">
-<h4 class="form-signin-heading">Please select a Course and Section below:</h4>
+<h4 class="form-signin-heading">Please select a Course and Assignment below:</h4>
 </div>
 <div class="card-body">
 <div class="row">
@@ -23,18 +23,18 @@
         {% endif %}
     </div>
     <div class="col-md-6">
-        <h4>Section</h4>
-        {% if sections %}
-        <select id="sectionSelector" class="form-control">
-            {% for section in sections %}
-            <option {% if selectedSection== section.name %}selected="selected" {% endif %}>{{section.name}}</option>
+        <h4>assignment</h4>
+        {% if assignments %}
+        <select id="assignmentSelector" class="form-control">
+            {% for assignment in assignments %}
+            <option {% if selectedAssignment== assignment.name %}selected="selected" {% endif %}>{{assignment.name}}</option>
             {% endfor %}
         </select>
         {% else %}
         {% if courses %}
-        There are no sections in this Course
+        There are no assignments in this Course
         {% else %}
-        Please select a course to see sections
+        Please select a course to see assignments
         {% endif %}
         {% endif %}
     </div>
@@ -59,7 +59,7 @@
 
 <div class="card">
 <div class="card-title">
-<h4>Following are the responses from students of {{selectedSection}}:</h4>
+<h4>Following are the responses from students of {{selectedAssignment}}:</h4>
 </div>
 <div class="card-body">
 <div class="table-responsive">
@@ -108,7 +108,7 @@
 </div>
 <div class="card">
 <div class="card-title">
-<h4>Following are the students without initial answers for {{selectedSection}}:</h4>
+<h4>Following are the students without initial answers for {{selectedAssignment}}:</h4>
 </div>
 <div class="card-body">
 <div class="table-responsive">
@@ -162,6 +162,6 @@
 
 
 {% block script %}
-  <meta id="groups" data-course="{{selectedCourse}}" data-section="{{selectedSection}}">
+  <meta id="groups" data-course="{{selectedCourse}}" data-assignment="{{selectedAssignment}}">
   <script type="text/javascript" src="/js/instructor/groups.js"></script>
 {% endblock %}

@@ -6,8 +6,8 @@ $('#courseSelector').on('change', function () {
     location.href = "/show_responses?course=" + this.value;
 });
 
-$('#sectionSelector').on('change', function () {
-    location.href = "/show_responses?course={{selectedCourse}}&section=" + this.value;
+$('#assignmentSelector').on('change', function () {
+    location.href = "/show_responses?course={{selectedCourse}}&assignment=" + this.value;
 });
 
 function getIndicesOf(searchStr, str, caseSensitive) {
@@ -92,7 +92,7 @@ function RowChecked(student, rounds) {
         }
 }
 
-function exportData(course, section) {
+function exportData(course, assignment) {
     var students = $('#show-responses').data().students;
     var indicesOfEmailStart = getIndicesOf(" email=u", students);
     emails = [];
@@ -118,7 +118,7 @@ function exportData(course, section) {
           i=i+1;
       }
     }
-    $.post("/data_file_export", {course: course, section: section, action:selector}, function (data) {
+    $.post("/data_file_export", {course: course, assignment: assignment, action:selector}, function (data) {
         if (data.charAt(0) == 'E') {
             bootbox.alert(data.substring(1));
         }
@@ -128,7 +128,7 @@ function exportData(course, section) {
     });
 }
 
-function exportSingleColumnHtml(course, section) {
+function exportSingleColumnHtml(course, assignment) {
   var students = $('#show-responses').data().students;
   var indicesOfEmailStart = getIndicesOf(" email=u", students);
   emails = [];
@@ -156,7 +156,7 @@ function exportSingleColumnHtml(course, section) {
         i=i+1;
       }
     }
-    $.post("/data_file_export", {course: course, section: section, action:selector}, function (data) {
+    $.post("/data_file_export", {course: course, assignment: assignment, action:selector}, function (data) {
         console.log(123);
         if (data.charAt(0) == 'E') {
             console.log(1234);
@@ -169,7 +169,7 @@ function exportSingleColumnHtml(course, section) {
     });
 }
 
-function exportMultiColumnHtml(course, section) {
+function exportMultiColumnHtml(course, assignment) {
   var students = $('#show-responses').data().students;
   var indicesOfEmailStart = getIndicesOf(" email=u", students);
   emails = [];
@@ -197,7 +197,7 @@ function exportMultiColumnHtml(course, section) {
         i=i+1;
       }
     }
-    $.post("/data_file_export", {course: course, section: section, action:selector}, function (data) {
+    $.post("/data_file_export", {course: course, assignment: assignment, action:selector}, function (data) {
         console.log(123);
         if (data.charAt(0) == 'E') {
             console.log(1234);

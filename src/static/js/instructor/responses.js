@@ -4,6 +4,6 @@ $('#courseSelector').on('change', function () {
     location.href = "/responses?course=" + this.value;
 });
 
-$('#sectionSelector').on('change', function () {
-    location.href = "/responses?course=" + selectedCourse + "&section=" + this.value;
+$('#assignmentSelector').on('change', function () {
+    location.href = "/responses?course=" + selectedCourse + "&assignment=" + this.value;
 });

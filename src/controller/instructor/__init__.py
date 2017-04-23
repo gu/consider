@@ -6,6 +6,6 @@ from .show_responses import HtmlExport
 from .groups import Groups
 from .responses import Responses
 from .rounds import Rounds
-from .sections import Sections
+from .assignments import Assignments
 from .students import Students
 from .graders import Graders

@@ -2,15 +2,15 @@ $('.sidebar-link > a').click(function() {
     var path = '/' + $(this).attr('dir');
 
     var selectedCourse = $('#courseSelector').val();
-    var selectedSection = $('#sectionSelector').val();
+    var selectedAssignment = $('#assignmentSelector').val();
 
     var params = {};
     if (path !== '/courses') {
         if (selectedCourse) {
             params.course = selectedCourse;
         }
-        if (selectedSection) {
-            params.section = selectedSection;
+        if (selectedAssignment) {
+            params.assignment = selectedAssignment;
         }
         path += '?' + $.param(params);
         console.log(path);

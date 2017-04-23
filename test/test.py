@@ -69,7 +69,7 @@ class TestServer:
         else:
             return False
 
-#config section
+#config assignment
 temp_datastore_path ="/tmp/test-tmp-datastore"
 #==================[START: initial checks]==================
 #check to make sure we are running tests on a valid platform
@@ -107,7 +107,7 @@ else:
 
 #==================[END: initial checks]==================
 #==================[START: set up test server]==================
-#in this section, we start a local development server
+#in this assignment, we start a local development server
 
 test_server = TestServer(temp_datastore_path,path_to_consider)
 test_server.startServer()
@@ -115,7 +115,7 @@ test_server.startServer()
 #==================[END: set up test server]==================
 #==================[START: prepare to run tests]==================
 
-#in this section we define methods for use in the test cases
+#in this assignment we define methods for use in the test cases
 #most of these test methods are implemented via webscraping the local dev server
 
 import requests
@@ -153,10 +153,10 @@ def courses_post(datainput):
     sleep(0.15)
     return r
 
-def sections_post(datainput):
-    r = session.post("http://localhost:8080/sections",data=datainput)
+def assignments_post(datainput):
+    r = session.post("http://localhost:8080/assignments",data=datainput)
     if not ("200" or "401" in str(r)):
-        print("error: sections post request responded with "+str(r))
+        print("error: assignments post request responded with "+str(r))
     sleep(0.15)
     return r
 
@@ -182,7 +182,7 @@ def student_rounds_post(datainput):
     return r
 
 def student_rounds_get(key):
-    return session.get("http://localhost:8080/student_rounds?section="+key)
+    return session.get("http://localhost:8080/student_rounds?assignment="+key)
 
 def groups_post(datainput):
     r = session.post("http://localhost:8080/groups",data=datainput)
@@ -192,45 +192,45 @@ def groups_post(datainput):
     return r
 
 def studentRespond(response,key):
-    data={"option":"option1","comm":response,"section":key}
+    data={"option":"option1","comm":response,"assignment":key}
     return student_rounds_post(data)
 
-def addSection(course_name,section_name):
-    data={"course":course_name,"section":section_name,"action":"add"}
-    return sections_post(data)
+def addAssignment(course_name,assignment_name):
+    data={"course":course_name,"assignment":assignment_name,"action":"add"}
+    return assignments_post(data)
 
-def modifyNumberOfGroups(num,course_name,section_name):
-    data={"groups":num,"course":course_name,"section":section_name,"action":"add"}
+def modifyNumberOfGroups(num,course_name,assignment_name):
+    data={"groups":num,"course":course_name,"assignment":assignment_name,"action":"add"}
     return groups_post(data)
 
-def addInitialQuestion(duetime,question,numberQuestions,course,section):
+def addInitialQuestion(duetime,question,numberQuestions,course,assignment):
     options = ["test question"]*numberQuestions
     options = str(options).replace("'",'"')
-    data={"course":course.upper(),"section":section.upper(),"time":duetime,"question":question,"number":numberQuestions,"round":"1","roundType":"initial","startBuffer":"0","options":options,"action":"add"}
+    data={"course":course.upper(),"assignment":assignment.upper(),"time":duetime,"question":question,"number":numberQuestions,"round":"1","roundType":"initial","startBuffer":"0","options":options,"action":"add"}
     return rounds_post(data)
 
-def addDiscussionRounds(num,duration,course,section):
-    data = {"total_discussions":num,"duration":duration,"course":course,"section":section,"action":"add_disc"}
+def addDiscussionRounds(num,duration,course,assignment):
+    data = {"total_discussions":num,"duration":duration,"course":course,"assignment":assignment,"action":"add_disc"}
     return rounds_post(data)
 
-def deleteDiscussionRound(round_id,course,section):
-    data = {"round_id":round_id,"course":course,"section":section,"action":"delete"}
+def deleteDiscussionRound(round_id,course,assignment):
+    data = {"round_id":round_id,"course":course,"assignment":assignment,"action":"delete"}
     return rounds_post(data)
 
-def changeDiscussionRound(round_id,course,section,description,deadline,starttime):
-    data = {"round_id":round_id,"course":course,"section":section,"description":description,"roundType":"discussion","action":"change","deadline":deadline,"start_time":starttime}
+def changeDiscussionRound(round_id,course,assignment,description,deadline,starttime):
+    data = {"round_id":round_id,"course":course,"assignment":assignment,"description":description,"roundType":"discussion","action":"change","deadline":deadline,"start_time":starttime}
     return rounds_post(data)
 
 def addCourse(course_name):
     data={"name":course_name,"action":"add"}
     return courses_post(data)
 
-def addStudents(emails,course,section):
-    data = {"emails":str(emails).replace("'",'"'),"course":course,"section":section,"action":"add"}
+def addStudents(emails,course,assignment):
+    data = {"emails":str(emails).replace("'",'"'),"course":course,"assignment":assignment,"action":"add"}
     return students_post(data)
 
-def addStudentsCSV(csv,course,section):
-    data = {"csv":str(csv).replace("'",'"'),"course":course,"section":section,"action":"addCSV"}
+def addStudentsCSV(csv,course,assignment):
+    data = {"csv":str(csv).replace("'",'"'),"course":course,"assignment":assignment,"action":"addCSV"}
     return students_post(data)
 
 def removeStudent(email):
@@ -261,8 +261,8 @@ def console(script):
     ans = requests.post("http://localhost:8000/console",data=data)
     return ans.text.strip()
 
-#goes to the student home page and gets a list of keys for displayed sections
-def get_section_key_list():
+#goes to the student home page and gets a list of keys for displayed assignments
+def get_assignment_key_list():
     answer = []
     req = session.get("http://localhost:8080/student_home")
     reg = re.compile("redirect.*btn-block")
@@ -298,24 +298,24 @@ def get_total_response_count():
     result = console(script)
     return int(result)
 
-def get_section_count(instructor_email):
-    script = "from src import model\ninstructor = model.Instructor.query(model.Instructor.email=='"+instructor_email+"').fetch()[0]\nsections = model.Section.query(ancestor=instructor.key).fetch()\nprint(len(sections))"
+def get_assignment_count(instructor_email):
+    script = "from src import model\ninstructor = model.Instructor.query(model.Instructor.email=='"+instructor_email+"').fetch()[0]\nassignments = model.Assignment.query(ancestor=instructor.key).fetch()\nprint(len(assignments))"
     result = console(script)
     return int(result)
 
-def get_group_count(instructor_email,course,section):
+def get_group_count(instructor_email,course,assignment):
     script = "from src import model\n"
     script += "instructor = model.Instructor.query(model.Instructor.email=='"+instructor_email+"').fetch()[0]\n"
-    script += "sections = model.Section.query(ancestor=instructor.key).fetch()\n"
-    script += "for s in sections:\n"
-    script += " if s.name == '"+section.upper()+"':\n"
+    script += "assignments = model.Assignment.query(ancestor=instructor.key).fetch()\n"
+    script += "for s in assignments:\n"
+    script += " if s.name == '"+assignment.upper()+"':\n"
     script += "  print(s.groups)\n"
     script += "  break\n"
     result = console(script)
     return int(result)
 
-def get_total_section_count():
-    script = "from src import model\nsections = model.Section.query().fetch()\nprint(len(sections))"
+def get_total_assignment_count():
+    script = "from src import model\nassignments = model.Assignment.query().fetch()\nprint(len(assignments))"
     result = console(script)
     return int(result)
 
@@ -341,9 +341,9 @@ def toggleCourse(coursename):
     data = {'action':'toggle','name':coursename}
     courses_post(data)
 
-def toggleSection(coursename,sectionname):
-    data = {'action':'toggle','course':coursename,'section':sectionname}
-    sections_post(data)
+def toggleAssignment(coursename,assignmentname):
+    data = {'action':'toggle','course':coursename,'assignment':assignmentname}
+    assignments_post(data)
 
 def isInstructorActive(email):
     script = "from src import model\ninstructor = model.Instructor.query(model.Instructor.email=='"+email+"').fetch()[0]\nprint(instructor.is_active)"
@@ -365,22 +365,22 @@ def isCourseActive(name):
     else:
         print("error: could not retrieve course")
 
-def isSectionActive(coursename,sectionname):
-    script = "from src import model\ncourse = model.Course.query(model.Course.name=='"+coursename.upper()+"').fetch()[0]\nsection = model.Section.query(ancestor=course.key).fetch()\nfor sec in section:\n if (sec.name == '"+sectionname.upper()+"'):\n  print(sec.is_active)\n"
+def isAssignmentActive(coursename,assignmentname):
+    script = "from src import model\ncourse = model.Course.query(model.Course.name=='"+coursename.upper()+"').fetch()[0]\nassignment = model.Assignment.query(ancestor=course.key).fetch()\nfor sec in assignment:\n if (sec.name == '"+assignmentname.upper()+"'):\n  print(sec.is_active)\n"
     result = console(script)
     if "True" in result:
         return True
     elif "False" in result:
         return False
     else:
-        print("error: could not retrieve section")
+        print("error: could not retrieve assignment")
 
-def endCurrentRound(course,section):
-    data={"action":"end-current-round","course":course,"section":section}
+def endCurrentRound(course,assignment):
+    data={"action":"end-current-round","course":course,"assignment":assignment}
     r = rounds_post(data)
 
-def startRounds(course,section,):
-    data={"action":"start","course":course,"section":section}
+def startRounds(course,assignment,):
+    data={"action":"start","course":course,"assignment":assignment}
     rounds_post(data)
 
 def getDeadline(round_id):
@@ -402,10 +402,10 @@ def getStarttime(round_id):
     return console(script)
 
 #returns 0 if no round is current
-def getCurrentRoundNum(section):
+def getCurrentRoundNum(assignment):
     script = "from src import model\n"
-    script += "sections = model.Section.query(model.Section.name=='"+section.upper()+"').fetch()[0]\n"
-    script += "print(sections.current_round)\n"
+    script += "assignments = model.Assignment.query(model.Assignment.name=='"+assignment.upper()+"').fetch()[0]\n"
+    script += "print(assignments.current_round)\n"
     ans = console(script)
     if ans == "": ans = "0"
     return int(console(script))
@@ -434,20 +434,20 @@ def canToggleCourse(coursename):
     afterToggle2 = isCourseActive(coursename)
     return (afterToggle != afterToggle2)
 
-def canToggleSection(coursename,sectionname):
-    toggleSection(coursename,sectionname)
-    afterToggle = isSectionActive(coursename,sectionname)
+def canToggleAssignment(coursename,assignmentname):
+    toggleAssignment(coursename,assignmentname)
+    afterToggle = isAssignmentActive(coursename,assignmentname)
     #we toggle twice so the instructor goes back to the original toggle state
-    toggleSection(coursename,sectionname)
-    afterToggle2 = isSectionActive(coursename,sectionname)
+    toggleAssignment(coursename,assignmentname)
+    afterToggle2 = isAssignmentActive(coursename,assignmentname)
     return (afterToggle != afterToggle2)
 
 
-inst_directories = ["/courses","/group_responses","/groups","/responses","/rounds","/sections","/students"]
+inst_directories = ["/courses","/group_responses","/groups","/responses","/rounds","/assignments","/students"]
 std_directories = ["/student_home","/student_rounds"]
 admin_directories = ["/admin"]
 #leave a user type as None if you don't want to run tests for that user type
-def testGET(admin,instructor,student,course,section,situation_string):
+def testGET(admin,instructor,student,course,assignment,situation_string):
     print("\trunning GET tests for the situation <"+situation_string+">")
     #instructor GET testing
     if instructor is not None:
@@ -472,9 +472,9 @@ def testGET(admin,instructor,student,course,section,situation_string):
         login(student,False)
         #TEST to make sure student gets 200 when expected
         for dir in std_directories:
-            #we need to treat /student_rounds differently because the GET request url contains the section key
+            #we need to treat /student_rounds differently because the GET request url contains the assignment key
             if dir == "/student_rounds":
-                keys = get_section_key_list()
+                keys = get_assignment_key_list()
                 if len(keys) > 0:
                     r = student_rounds_get(keys[0])
                     if not "200" in str(r):
@@ -518,7 +518,7 @@ def testGET(admin,instructor,student,course,section,situation_string):
 #==================[START: run tests]==================
 
 try:
-    #set up test admin, instructor, course, section and student
+    #set up test admin, instructor, course, assignment and student
     login("test-admin@gmail.com",True)
     addInstructor("test-instructor@gmail.com")
     logout()
@@ -529,9 +529,9 @@ try:
     addCourse("TEST-COURSE")
     if (get_course_count("test-instructor@gmail.com")==1):
         print("test-course created successfully")
-    addSection("TEST-COURSE","TEST-SECTION")
-    if (get_section_count("test-instructor@gmail.com")==1):
-        print("test-section created successfully")
+    addAssignment("TEST-COURSE","TEST-SECTION")
+    if (get_assignment_count("test-instructor@gmail.com")==1):
+        print("test-assignment created successfully")
     students = ["test-student@gmail.com","test-student2@gmail.com"]
     studentsCSV = ["TEST,S10,test-student10@gmail.com,test-student10@osu.edu\nTEST,S11,test-student11@gmail.com,test-student11@osu.edu"]
     addStudents(students,"TEST-COURSE","TEST-SECTION")
@@ -674,8 +674,8 @@ try:
     else:
         print_failed(test_number,"instructor could not remove a student: TODO: seems this test is not testing the right thing")
     test_number += 1
-    #investigate: maybe removing just removes the student from the section, not from the entire thing
-    #result: yes it does (remove from section, not from everything).
+    #investigate: maybe removing just removes the student from the assignment, not from the entire thing
+    #result: yes it does (remove from assignment, not from everything).
     '''
     #test to see if a student can remove a student
     login("test-instructor@gmail.com",False)
@@ -753,79 +753,79 @@ try:
     test_number+=1
 
     #===========[END: testing /courses]===================
-    #===========[START: testing /sections]===================
-    print("testing /sections")
+    #===========[START: testing /assignments]===================
+    print("testing /assignments")
     print("\t testing POST action = add")
     test_number = 1
-    #TEST: see if instructor can add section
+    #TEST: see if instructor can add assignment
     login("test-instructor@gmail.com",False)
-    startcount = get_total_section_count()
-    addSection("TEST-COURSE","SECTIONXYZ")
-    aftercount = get_total_section_count()
+    startcount = get_total_assignment_count()
+    addAssignment("TEST-COURSE","SECTIONXYZ")
+    aftercount = get_total_assignment_count()
     if(aftercount - startcount == 1):
         print_passed(test_number)
     else:
-        print_failed(test_number,"instructor could not add a section")
+        print_failed(test_number,"instructor could not add a assignment")
     logout()
     test_number += 1
-    #TEST: see if instructor can add section to a course that doesn't exisit
+    #TEST: see if instructor can add assignment to a course that doesn't exisit
     login("test-instructor@gmail.com",False)
-    startcount = get_total_section_count()
-    addSection("TEST-COURSEasdfsd","SECTIONXYZ")
-    aftercount = get_total_section_count()
+    startcount = get_total_assignment_count()
+    addAssignment("TEST-COURSEasdfsd","SECTIONXYZ")
+    aftercount = get_total_assignment_count()
     if(aftercount - startcount == 0):
         print_passed(test_number)
     else:
-        print_failed(test_number,"instructor could add a section to a course that doesn't exist")
+        print_failed(test_number,"instructor could add a assignment to a course that doesn't exist")
     logout()
     test_number += 1
 
-    #TEST: see if instructor can add duplicate section
+    #TEST: see if instructor can add duplicate assignment
     login("test-instructor@gmail.com",False)
-    startcount = get_total_section_count()
-    addSection("TEST-COURSE","SECTIONXYZ2")
-    middlecount = get_total_section_count()
-    addSection("TEST-COURSE","SECTIONXYZ2")
-    aftercount = get_total_section_count()
+    startcount = get_total_assignment_count()
+    addAssignment("TEST-COURSE","SECTIONXYZ2")
+    middlecount = get_total_assignment_count()
+    addAssignment("TEST-COURSE","SECTIONXYZ2")
+    aftercount = get_total_assignment_count()
     if(aftercount - startcount == 1 and middlecount == aftercount):
         print_passed(test_number)
     else:
-        print_failed(test_number,"instructor was able to add duplicate sections")
+        print_failed(test_number,"instructor was able to add duplicate assignments")
     logout()
     test_number += 1
 
-    #TEST: see if student can add section
+    #TEST: see if student can add assignment
     login("test-student@gmail.com",False)
-    startcount = get_total_section_count()
-    addSection("TEST-COURSE","STUDENTSECTION")
-    aftercount = get_total_section_count()
+    startcount = get_total_assignment_count()
+    addAssignment("TEST-COURSE","STUDENTSECTION")
+    aftercount = get_total_assignment_count()
     if(aftercount - startcount == 0):
         print_passed(test_number)
     else:
-        print_failed(test_number,"permissions error: student could add a section")
+        print_failed(test_number,"permissions error: student could add a assignment")
     logout()
     test_number += 1  
 
     print("\t testing POST action = toggle")
-    #TEST: see if instructor can toggle a section
+    #TEST: see if instructor can toggle a assignment
     login("test-instructor@gmail.com",False)
-    if(canToggleSection("TEST-COURSE","TEST-SECTION")):
+    if(canToggleAssignment("TEST-COURSE","TEST-SECTION")):
         print_passed(test_number)
     else:
-        print_failed(test_number,"instructor was unable to toggle a section")
+        print_failed(test_number,"instructor was unable to toggle a assignment")
     logout()
     test_number+=1
 
-    #TEST: see if student can toggle a section
+    #TEST: see if student can toggle a assignment
     login("test-student@gmail.com",False)
-    if(canToggleSection("TEST-COURSE","TEST-SECTION")):
-        print_failed(test_number,"permissions error: student was able to toggle a section")
+    if(canToggleAssignment("TEST-COURSE","TEST-SECTION")):
+        print_failed(test_number,"permissions error: student was able to toggle a assignment")
     else:
         print_passed(test_number)
     logout()
     test_number+=1
 
-    #===========[END: testing /sections]===================
+    #===========[END: testing /assignments]===================
     #===========[START: testing /rounds]===================
     print("testing /rounds")
     #add
@@ -840,8 +840,8 @@ try:
     question = "sample question"
     numberQuestions = 4
     course = "TEST-COURSE"
-    section = "TEST-SECTION"
-    addInitialQuestion(duetime,question,numberQuestions,course,section)
+    assignment = "TEST-SECTION"
+    addInitialQuestion(duetime,question,numberQuestions,course,assignment)
     aftercount = get_total_round_count()
     if(aftercount - startcount == 1):
         print_passed(test_number)
@@ -859,8 +859,8 @@ try:
     question = "sample question"
     numberQuestions = 4
     course = "TEST-COURSE"
-    section = "TEST-SECTION"
-    addInitialQuestion(duetime,question,numberQuestions,course,section)
+    assignment = "TEST-SECTION"
+    addInitialQuestion(duetime,question,numberQuestions,course,assignment)
     aftercount = get_total_round_count()
     if(aftercount - startcount == 0):
         print_passed(test_number)
@@ -878,8 +878,8 @@ try:
     question = "sample question"
     numberQuestions = 4
     course = "TEST-COURSE"
-    section = "TEST-SECTIONXYZ"
-    addInitialQuestion(duetime,question,numberQuestions,course,section)
+    assignment = "TEST-SECTIONXYZ"
+    addInitialQuestion(duetime,question,numberQuestions,course,assignment)
     aftercount = get_total_round_count()
     if(aftercount - startcount == 0):
         print_passed(test_number)
@@ -978,7 +978,7 @@ try:
     #this method is testing below: function is to add students to groups and thus must be done after students have done something 
     #===========[END: testing /groups]===================
     #setting up new test data separate from above tests
-    #set up new test admin, instructor, course, section and student
+    #set up new test admin, instructor, course, assignment and student
     print("setting up new data for testing student views...")
     login("test-admin@gmail.com",True)
     #add instructor
@@ -987,19 +987,19 @@ try:
     login("s-test-instructor@gmail.com",False)
     #add course
     addCourse("S-TEST-COURSE")
-    #add section
-    addSection("S-TEST-COURSE","S-TEST-SECTION")
+    #add assignment
+    addAssignment("S-TEST-COURSE","S-TEST-SECTION")
     students = ["s-test-student@gmail.com","s-test-student2@gmail.com"]
-    #add students to the created section
+    #add students to the created assignment
     addStudents(students,"S-TEST-COURSE","S-TEST-SECTION")
     duetime = datetime.datetime.now()+datetime.timedelta(hours=24)
     duetime = duetime.strftime("%Y-%m-%dT%H:%M")
     question = "sample question"
     numberQuestions = 4
     course = "S-TEST-COURSE"
-    section = "S-TEST-SECTION"
+    assignment = "S-TEST-SECTION"
     #add initial question a discussion rounds
-    addInitialQuestion(duetime,question,numberQuestions,course,section)
+    addInitialQuestion(duetime,question,numberQuestions,course,assignment)
     addDiscussionRounds(10,1,"S-TEST-COURSE","S-TEST-SECTION")
     #start the rounds
     startRounds("S-TEST-COURSE","S-TEST-SECTION")
@@ -1008,9 +1008,9 @@ try:
     test_number = 1
     print("testing /student_home")
     login("s-test-student@gmail.com",False)
-    keys = get_section_key_list()
+    keys = get_assignment_key_list()
     if len(keys) != 1:
-        print_failed(test_number,"student did not have the right amount of sections displayed")
+        print_failed(test_number,"student did not have the right amount of assignments displayed")
     else:
         print_passed(test_number)
 
@@ -1049,55 +1049,55 @@ try:
     getStd = "get-student@gmail.com"
     getStd2 = "get-student2@gmail.com"
     getCourse = "GET-TEST-COURSE"
-    getSection = "GET-TEST-SECTION"
+    getAssignment = "GET-TEST-SECTION"
     #######
     #setting up new test data separate from above tests
-    #set up new test admin, instructor, course, section and student
+    #set up new test admin, instructor, course, assignment and student
     login(getAdmin,True)
     #add instructor
     addInstructor(getInst)
-    testGET(getAdmin,getInst,None,getCourse,getSection,"brand new instructor added")
+    testGET(getAdmin,getInst,None,getCourse,getAssignment,"brand new instructor added")
     logout()
     login(getInst,False)
     #add course
     addCourse(getCourse)
-    testGET(getAdmin,getInst,None,getCourse,getSection,"course added without section, no students")
+    testGET(getAdmin,getInst,None,getCourse,getAssignment,"course added without assignment, no students")
     login(getInst,False)
-    #add section
-    addSection(getCourse,getSection)
-    testGET(getAdmin,getInst,None,getCourse,getSection,"course and section, no students")
+    #add assignment
+    addAssignment(getCourse,getAssignment)
+    testGET(getAdmin,getInst,None,getCourse,getAssignment,"course and assignment, no students")
     login(getInst,False)
     students = [getStd,getStd2]
-    #add students to the created section
-    r = addStudents(students,getCourse,getSection)
+    #add students to the created assignment
+    r = addStudents(students,getCourse,getAssignment)
     print(r.text)
-    testGET(getAdmin,getInst,getStd,getCourse,getSection,"fresh course, section, and student added")
+    testGET(getAdmin,getInst,getStd,getCourse,getAssignment,"fresh course, assignment, and student added")
     login(getInst,False)
     duetime = datetime.datetime.now()+datetime.timedelta(hours=24)
     duetime = duetime.strftime("%Y-%m-%dT%H:%M")
     question = "sample question"
     numberQuestions = 4
     course = getCourse
-    section = getSection
+    assignment = getAssignment
     #add initial question and discussion rounds
-    addInitialQuestion(duetime,question,numberQuestions,course,section)
-    testGET(getAdmin,getInst,getStd,getCourse,getSection,"initial question added but no discussion rounds")
+    addInitialQuestion(duetime,question,numberQuestions,course,assignment)
+    testGET(getAdmin,getInst,getStd,getCourse,getAssignment,"initial question added but no discussion rounds")
     login(getInst,False)
-    addDiscussionRounds(10,1,getCourse,getSection)
-    testGET(getAdmin,getInst,getStd,getCourse,getSection,"initial question and discussion rounds added but not started")
+    addDiscussionRounds(10,1,getCourse,getAssignment)
+    testGET(getAdmin,getInst,getStd,getCourse,getAssignment,"initial question and discussion rounds added but not started")
     login(getInst,False)
     #start the rounds
-    startRounds(getCourse,getSection)
-    testGET(getAdmin,getInst,getStd,getCourse,getSection,"initial question and discussion rounds added and started")
+    startRounds(getCourse,getAssignment)
+    testGET(getAdmin,getInst,getStd,getCourse,getAssignment,"initial question and discussion rounds added and started")
     logout()
     login(getStd,False)
-    keys = get_section_key_list()
+    keys = get_assignment_key_list()
     studentRespond("test response",keys[0])
-    testGET(getAdmin,getInst,getStd,getCourse,getSection,"initial question and discussion rounds added and student responded to initial question")
+    testGET(getAdmin,getInst,getStd,getCourse,getAssignment,"initial question and discussion rounds added and student responded to initial question")
     logout()
     login(getInst,False)
-    endCurrentRound(getCourse,getSection)
-    testGET(getAdmin,getInst,getStd,getCourse,getSection,"student responded to initial question, and the round ended and students were not added to groups yet")
+    endCurrentRound(getCourse,getAssignment)
+    testGET(getAdmin,getInst,getStd,getCourse,getAssignment,"student responded to initial question, and the round ended and students were not added to groups yet")
     #==================[END: GET TESTING]==================
 
 except:

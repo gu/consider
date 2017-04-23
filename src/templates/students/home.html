@@ -9,18 +9,18 @@
     <h2>Welcome {{nickname}}!</h2>
     </div>
     <div class="card-body">
-    <h4 class="form-signin-heading">Select a section to continue</h4>
+    <h4 class="form-signin-heading">Select a assignment to continue</h4>
 
-    {% if sections %}
+    {% if assignments %}
     <div class="list-group">
-        {% for section in sections %}
-        <button type="button" onclick="redirect('{{section.key}}', '{{section.group}}', '{{section.round}}')" class="list-group-item btn-block">
-            {{section.course}} - {{section.name}}
+        {% for assignment in assignments %}
+        <button type="button" onclick="redirect('{{assignment.key}}', '{{assignment.group}}', '{{assignment.round}}')" class="list-group-item btn-block">
+            {{assignment.course}} - {{assignment.name}}
         </button>
         {% endfor %}
     </div>
     {% else %}
-    <p class="well">Sorry! none of the sections in which you are enrolled are active right now.</p>
+    <p class="well">Sorry! none of the assignments in which you are enrolled are active right now.</p>
     {% endif %}
     </div>
 </div>

@@ -3,7 +3,7 @@ from Group import *
 from Instructor import *
 from Response import *
 from Round import *
-from Section import *
+from Assignment import *
 from SeqResponse import *
 from Student import *
 from Grader import *

@@ -23,8 +23,8 @@ from src import model, utils
 
 def find_prev_round_responses(current_round):
     prev_round_number = current_round.number - 1
-    section = current_round.key.parent().get()
-    req_round = model.Round.get_by_number(section_key=section.key, number=prev_round_number)
+    assignment = current_round.key.parent().get()
+    req_round = model.Round.get_by_number(assignment_key=assignment.key, number=prev_round_number)
     utils.log('req_round = Round#' + str(req_round.number))
     return model.Response.query(ancestor=req_round.key).fetch() if req_round else None
 
@@ -45,7 +45,7 @@ def quiz_view_template(student, rround, template_values):
     template_values['number'] = rround.quiz.options_total
 
 
-def group_comments(group, section, previous_round):
+def group_comments(group, assignment, previous_round):
     # Init an empty list for holding the comments
     comments = []
     did_not_participate = []
@@ -55,7 +55,7 @@ def group_comments(group, section, previous_round):
         response = model.Response.get_by_id(student_email, parent=previous_round.key)
 
         # Get the student's info
-        s = section.find_student_info(student_email)
+        s = assignment.find_student_info(student_email)
 
         if response:
             comment = {
@@ -66,8 +66,8 @@ def group_comments(group, section, previous_round):
             if response.thumbs:
                 _thumbs = []
                 for _email, _value in response.thumbs.iteritems():
-                    s_info = section.find_student_info(_email)
-                    name = s_info.alias if s_info and section.is_anonymous else _email
+                    s_info = assignment.find_student_info(_email)
+                    name = s_info.alias if s_info and assignment.is_anonymous else _email
                     _thumbs.append((name, _value))  # Add as a tuple
                 comment['thumbs'] = sorted(_thumbs)  # Send as sorted tuples
 
@@ -84,7 +84,7 @@ def group_comments(group, section, previous_round):
             comments.append(comment)
         else:
             # Else note down who did not participate
-            name = s.alias if section.is_anonymous else s.email
+            name = s.alias if assignment.is_anonymous else s.email
             did_not_participate.append(name)
 
     utils.log('Comments = ' + str(comments))
@@ -93,10 +93,10 @@ def group_comments(group, section, previous_round):
 
 class Rounds(webapp2.RequestHandler):
     """
-    API to redirect a student based on what stage she is in in a particular section:
+    API to redirect a student based on what stage she is in in a particular assignment:
     initial question, discussion or summary round.
 
-    If no round is active for this section, it redirects to an appropriate error page.
+    If no round is active for this assignment, it redirects to an appropriate error page.
     """
 
     def get(self):
@@ -109,28 +109,28 @@ class Rounds(webapp2.RequestHandler):
 
         # Otherwise, log which student made the get
         utils.log('Student logged in: ' + str(student))
-        # And grab the key for the section
-        section_key = self.request.get('section')
+        # And grab the key for the assignment
+        assignment_key = self.request.get('assignment')
         # Make sure that it isn't null
-        if not section_key:
+        if not assignment_key:
             # Error if so, and redirect home
-            utils.error('Section_key is null')
+            utils.error('assignment_key is null')
             self.redirect('/home')
         else:
-            # And then grab the section from the key
-            section = ndb.Key(urlsafe=section_key).get()
+            # And then grab the assignment from the key
+            assignment = ndb.Key(urlsafe=assignment_key).get()
             # Making sure it's not null
-            if not section:
+            if not assignment:
                 # Error if so
-                utils.error('Section is null')
+                utils.error('assignment is null')
             else:
                 # Now check if the current round is 0
-                if section.current_round == 0:
+                if assignment.current_round == 0:
                     # And redirect to an error if so
                     self.redirect('/error?code=103')
                 else:
                     # Otherwise, we need to set our template values
-                    self.render_template(student, section)
+                    self.render_template(student, assignment)
 
     # end get
 
@@ -145,31 +145,31 @@ class Rounds(webapp2.RequestHandler):
             return self.redirect('/home')
         # end
 
-        # First, grab the section key from the page
-        section_key = self.request.get('section')
-        # Double check that we actually got a section key
-        if section_key:
+        # First, grab the assignment key from the page
+        assignment_key = self.request.get('assignment')
+        # Double check that we actually got a assignment key
+        if assignment_key:
             try:
-                # Grab the section from the database
-                section = ndb.Key(urlsafe=section_key).get()
+                # Grab the assignment from the database
+                assignment = ndb.Key(urlsafe=assignment_key).get()
                 # And double check that it's valid
 
-                if section:
+                if assignment:
                     # Grab the current round from the database
-                    current_round = model.Round.get_by_id(section.current_round, parent=section.key)
+                    current_round = model.Round.get_by_id(assignment.current_round, parent=assignment.key)
                     # And double check that it's valid
                     if current_round:
-                        # If this is a quiz round or if this section has roudns based discussions,
+                        # If this is a quiz round or if this assignment has roudns based discussions,
                         # save it in the usual way
-                        if section.has_rounds or current_round.is_quiz:
+                        if assignment.has_rounds or current_round.is_quiz:
                             self.save_submission(student, current_round)
                         else:
                             # Otherwise, save as a Seq Discussion
                             # 1. Make sure the author email passed from view is same as current student's email
                             author_email = student.email
-                            student_info = utils.get_student_info(author_email, section.students)
+                            student_info = utils.get_student_info(author_email, assignment.students)
                             group_id = student_info.group
-                            group = model.Group.get_by_id(id=group_id, parent=section.key)
+                            group = model.Group.get_by_id(id=group_id, parent=assignment.key)
 
                             # 2. create the post in that group
                             if group:
@@ -187,20 +187,20 @@ class Rounds(webapp2.RequestHandler):
                                 utils.error('Group is null')
                     else:
                         utils.error('Sorry! The round is not visible, please try again later.', handler=self)
-                else:  # section is null
-                    utils.error('Section is null', handler=self)
+                else:  # assignment is null
+                    utils.error('assignment is null', handler=self)
             except Exception as e:
                 utils.error(
                     'Sorry! There was some error submitting your response please try again later. Exception: ' + e.message,
                     handler=self)  # TODO: use exceptions in all classes?
         else:
-            utils.error('Invalid Parameters: section_key is null', handler=self)
+            utils.error('Invalid Parameters: assignment_key is null', handler=self)
 
     # end post
 
-    def render_template(self, student, section):
+    def render_template(self, student, assignment):
         # update the database to the current round based on time
-        database_round = utils.get_current_round(section)
+        database_round = utils.get_current_round(assignment)
         # Get the requested round number from the page
         current_round = self.request.get('round')
         # Now check that the round number passed in actually exists, and set
@@ -208,11 +208,11 @@ class Rounds(webapp2.RequestHandler):
         if current_round:
             requested_round_number = int(current_round)
         else:
-            requested_round_number = section.current_round
+            requested_round_number = assignment.current_round
         # end
 
         # Grab the requested round
-        requested_round = model.Round.get_by_id(requested_round_number, parent=section.key)
+        requested_round = model.Round.get_by_id(requested_round_number, parent=assignment.key)
         # And check that it's not null
         if not requested_round:
             # Error if so
@@ -225,7 +225,7 @@ class Rounds(webapp2.RequestHandler):
             # And the current time
             current_time = datetime.datetime.now()
             # And check if we're dealing with an expired round
-            if deadline < current_time or requested_round_number < section.current_round:
+            if deadline < current_time or requested_round_number < assignment.current_round:
                 # Set the template value if so
                 template_values['expired'] = True
             # end
@@ -236,15 +236,15 @@ class Rounds(webapp2.RequestHandler):
             # Now, just grab all the other generic values we need directly
             # template_values['deadline'] = datetime.datetime.strptime(requested_round.deadline, '%Y-%m-%dT%H:%M')
             template_values['deadline'] = requested_round.deadline
-            template_values['sectionKey'] = self.request.get('section')
-            template_values['rounds'] = section.current_round
-            template_values['num_total_rounds'] = section.rounds
-            template_values['show_name'] = not section.is_anonymous
+            template_values['assignmentKey'] = self.request.get('assignment')
+            template_values['rounds'] = assignment.current_round
+            template_values['num_total_rounds'] = assignment.rounds
+            template_values['show_name'] = not assignment.is_anonymous
 
             # Send round names
-            if section.has_rounds:
-                if section.rounds > 3:
-                    disc_round_names = ['Round ' + str(i) for i in range(1, section.rounds - 2)] + ['Latest Posts']
+            if assignment.has_rounds:
+                if assignment.rounds > 3:
+                    disc_round_names = ['Round ' + str(i) for i in range(1, assignment.rounds - 2)] + ['Latest Posts']
                 else:
                     disc_round_names = ['Round 1']
             else:
@@ -267,12 +267,12 @@ class Rounds(webapp2.RequestHandler):
                 template = utils.jinja_env().get_template('students/round.html')
             else:
                 # Otherwise, set up template values for appropriate discussion round
-                if section.has_rounds:
-                    self.discussion_view_template(student, section, requested_round_number, template_values)
+                if assignment.has_rounds:
+                    self.discussion_view_template(student, assignment, requested_round_number, template_values)
                     # And set the right template
                     template = utils.jinja_env().get_template('students/discussion.html')
                 else:
-                    self.seq_discussion_view_template(student, section, template_values)
+                    self.seq_discussion_view_template(student, assignment, template_values)
                     template_values['description'] = requested_round.description
                     template = utils.jinja_env().get_template('students/seq_discussion.html')
             # end
@@ -282,13 +282,13 @@ class Rounds(webapp2.RequestHandler):
 
     # end render_templates
 
-    def seq_discussion_view_template(self, student, section, template_values):
-        student_info = utils.get_student_info(student.email, section.students)
+    def seq_discussion_view_template(self, student, assignment, template_values):
+        student_info = utils.get_student_info(student.email, assignment.students)
         if student_info:
             # 1. Grab student's alias and group from db
             template_values['alias'] = student_info.alias
             group_id = student_info.group
-            group = model.Group.get_by_id(group_id, parent=section.key)
+            group = model.Group.get_by_id(group_id, parent=assignment.key)
             if group:
                 # 2. Extract all the posts in that group from db
                 posts = model.SeqResponse.query(ancestor=group.key).order(model.SeqResponse.index).fetch()
@@ -297,34 +297,34 @@ class Rounds(webapp2.RequestHandler):
                 template_values['posts'] = posts
 
                 # 4. Grab all posts from the previous round (initial)
-                initial = model.Round.get_by_id(1, parent=section.key)
-                initial_answers, did_not_participate = group_comments(group, section, initial)
+                initial = model.Round.get_by_id(1, parent=assignment.key)
+                initial_answers, did_not_participate = group_comments(group, assignment, initial)
                 template_values['initial_answers'] = initial_answers
                 template_values['did_not_participate'] = did_not_participate
 
     # end seq_discussion_view_template
 
-    def discussion_view_template(self, student, section, round_number, template_values):
-        student_info = utils.get_student_info(student.email, section.students)
+    def discussion_view_template(self, student, assignment, round_number, template_values):
+        student_info = utils.get_student_info(student.email, assignment.students)
         if student_info:
             template_values['alias'] = student_info.alias
             group_id = student_info.group
-            group = model.Group.get_by_id(group_id, parent=section.key)
+            group = model.Group.get_by_id(group_id, parent=assignment.key)
             # Double check that it was found
             if group:
                 # Depending on round number, we have to grab from
                 if round_number == 1:
-                    previous_round = model.Round.get_by_id(1, parent=section.key)
+                    previous_round = model.Round.get_by_id(1, parent=assignment.key)
                 else:
-                    previous_round = model.Round.get_by_id(round_number - 1, parent=section.key)
+                    previous_round = model.Round.get_by_id(round_number - 1, parent=assignment.key)
                 # end
                 # Now grab all the group comments for the previous round
-                comments, did_not_participate = group_comments(group, section, previous_round)
+                comments, did_not_participate = group_comments(group, assignment, previous_round)
                 # Set the template value for all the group comments
                 template_values['comments'] = comments
                 template_values['did_not_participate'] = did_not_participate
                 # Grab the requested round
-                requested_round = model.Round.get_by_id(round_number, parent=section.key)
+                requested_round = model.Round.get_by_id(round_number, parent=assignment.key)
                 # Grab the discussion description
                 template_values['description'] = requested_round.description
                 # And grab the logged in student's response

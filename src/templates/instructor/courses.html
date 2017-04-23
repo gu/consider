@@ -21,7 +21,7 @@
         <tr>
             <th>#</th>
             <th>Course Name</th>
-            <th>Sections</th>
+            <th>assignments</th>
             <th>Status</th>
             <th></th>
             <th></th>
@@ -32,7 +32,7 @@
         <tr>
             <td>{{loop.index}}</td>
             <td>{{course.name}}</td>
-            <td>{{course.sections | length}}</td>
+            <td>{{course.assignments | length}}</td>
             <td>
                 {{'Active' if course.is_active else 'Inactive'}}
             </td>
@@ -41,52 +41,52 @@
                 </button>
             </td>
             <td>
-                <button type="button" class="btn btn-default btn-sm" aria-label="Sections" data-toggle="collapse"
+                <button type="button" class="btn btn-default btn-sm" aria-label="assignments" data-toggle="collapse"
                         data-target="#collapse{{loop.index}}" aria-expanded={%- if expand==course.name -%}
                 "true"{%- else -%}"false"{%- endif -%}>
-                Sections <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+                assignments <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
                 </button>
             </td>
         </tr>
         <tr {% if not course.is_active %}class="disabled" {% endif %}>
             <td colspan="6">
                 <div class="collapse{%- if expand==course.name %} in{%- endif -%}" id="collapse{{loop.index}}">
-                    <button type="button" class="btn btn-default btn-sm" onclick="addSection('{{course.name}}')"
-                            aria-label="Add Section" style="margin-bottom: 8px;">
-                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add a section to
+                    <button type="button" class="btn btn-default btn-sm" onclick="addassignment('{{course.name}}')"
+                            aria-label="Add assignment" style="margin-bottom: 8px;">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add a assignment to
                         {{course.name}}
                     </button>
                     <div class="well well-sm">
-                        {% if course.sections %}
+                        {% if course.assignments %}
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Section Name</th>
+                                    <th>assignment Name</th>
                                     <th>Status</th>
                                     <th></th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {% for section in course.sections %}
+                                {% for assignment in course.assignments %}
                                 <tr>
                                     <td>{{loop.index}}</td>
-                                    <td>{{section.name}}</td>
-                                    <td>{%- if section.is_active -%}
+                                    <td>{{assignment.name}}</td>
+                                    <td>{%- if assignment.is_active -%}
                                         <span class="label label-success">Active</span>
                                         {%- else -%}
                                         <span class="label label-warning">Inactive</span>
                                         {%- endif -%}
                                     </td>
-                                    <td>{% if section.is_active %}
+                                    <td>{% if assignment.is_active %}
                                         <button class="btn btn-danger btn-sm"
-                                                onclick="toggleSectionStatus('{{course.name}}','{{section.name}}')">
+                                                onclick="toggleassignmentStatus('{{course.name}}','{{assignment.name}}')">
                                             Inactivate
                                         </button>
                                         {% else %}
                                         <button class="btn btn-success btn-sm"
-                                                onclick="toggleSectionStatus('{{course.name}}','{{section.name}}')">
+                                                onclick="toggleassignmentStatus('{{course.name}}','{{assignment.name}}')">
                                             Activate
                                         </button>
                                         {% endif %}
@@ -97,7 +97,7 @@
                             </table>
                         </div>
                         {% else %}
-                        <p>No sections.</p>
+                        <p>No assignments.</p>
                         {% endif %}
                     </div>
                 </div>
@@ -140,33 +140,33 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="sectionModal" tabindex="-1" role="dialog" aria-labelledby="sectionModalLabel"
+<div class="modal fade" id="assignmentModal" tabindex="-1" role="dialog" aria-labelledby="assignmentModalLabel"
      aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="sectionModalLabel">Add a Section</h4>
+                <h4 class="modal-title" id="assignmentModalLabel">Add a assignment</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" id="sectionModalForm" method="post" style="text-align: center;">
+                <form class="form-horizontal" id="assignmentModalForm" method="post" style="text-align: center;">
                     <div class="form-group">
-                        <label for="sectionName" class="col-sm-4 control-label">Section Name:</label>
+                        <label for="assignmentName" class="col-sm-4 control-label">assignment Name:</label>
 
-                        <div class="col-sm-8" id="sectionNameContainer">
-                            <input type="text" class="form-control" id="sectionName" name="sectionName"
-                                   placeholder="Ex: Section-3PM" required>
-                            <span id="sectionNameHelpBlock" class="help-block"></span>
+                        <div class="col-sm-8" id="assignmentNameContainer">
+                            <input type="text" class="form-control" id="assignmentName" name="assignmentName"
+                                   placeholder="Ex: assignment-3PM" required>
+                            <span id="assignmentNameHelpBlock" class="help-block"></span>
                         </div>
                     </div>
                     <button type="submit" class="hide"></button>
-                    <input type="hidden" name="sectionCourse" id="sectionCourse">
+                    <input type="hidden" name="assignmentCourse" id="assignmentCourse">
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="submitSection()">Add Section</button>
+                <button type="button" class="btn btn-primary" onclick="submitassignment()">Add assignment</button>
             </div>
         </div>
     </div>

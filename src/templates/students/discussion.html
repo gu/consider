@@ -5,7 +5,7 @@
 {% block head %}
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-<meta id="student-discussion" data-expired="{{expired}}" data-numComments="{{comments | length}}" data-response="{{response}}" data-sectionKey="{{sectionKey}}" data-page="{{ curr_page-2 }}">
+<meta id="student-discussion" data-expired="{{expired}}" data-numComments="{{comments | length}}" data-response="{{response}}" data-assignmentKey="{{assignmentKey}}" data-page="{{ curr_page-2 }}">
 <script type="text/javascript" src="/js/students/discussion.js"></script>
 {{ super() }}
 <script src="/ckeditor/ckeditor.js"></script>
