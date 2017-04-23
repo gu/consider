@@ -30,7 +30,7 @@ class ErrorPage(webapp2.RequestHandler):
     * '100': "Oops! Something went wrong please try again.",
     * '101': "Sorry you are not registered with this application, please contact your Instructor.",
     * '102': "Sorry you are not an instructor.",
-    * '103': "Sorry no rounds are active for this section, please try again later.",
+    * '103': "Sorry no rounds are active for this assignment, please try again later.",
     * '104': "Sorry the round was not found, please contact your Instructor.",
     * '105': "Sorry, your group was not found, please contact your Instructor.",
     * '106': "Sorry, you are not in a group, please contact your Instructor."
@@ -109,12 +109,12 @@ class CronTask(webapp2.RequestHandler):
     def get(self):
         time_notification = 120  # Email notification when time left is no more than 2 hours
         current_time = datetime.datetime.now()
-        sections = model.Assignment.query().fetch()
-        for section in sections:
-            print section.name
-            num = utils.get_current_round(section)
+        assignments = model.Assignment.query().fetch()
+        for assignment in assignments:
+            print assignment.name
+            num = utils.get_current_round(assignment)
             if num:
-                rounds = model.Round.query(ancestor=section.key).fetch()
+                rounds = model.Round.query(ancestor=assignment.key).fetch()
                 for rnd in rounds:
                     if rnd.number == num:
                         round = rnd
@@ -122,7 +122,7 @@ class CronTask(webapp2.RequestHandler):
                 delta_time = round.deadline - current_time
                 time_remaining = 24 * 60 * delta_time.days + delta_time.seconds // 60
                 if 0 < time_remaining < time_notification:
-                    sec_emails = [s.email for s in section.students]
+                    sec_emails = [s.email for s in assignment.students]
                     response = model.Response.query(ancestor=round.key).fetch()
                     res_emails = [res.student for res in response]
                     to_emails = [email for email in sec_emails if email not in res_emails]
@@ -143,7 +143,7 @@ application = webapp2.WSGIApplication([
     ('/error', ErrorPage),
     ('/admin', admin.AdminPage),
     ('/courses', instructor.Courses),
-    ('/sections', instructor.Sections),
+    ('/assignments', instructor.Assignments),
     ('/students', instructor.Students),
     ('/rounds', instructor.Rounds),
     ('/responses', instructor.Responses),

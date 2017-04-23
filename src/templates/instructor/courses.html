@@ -21,7 +21,7 @@
         <tr>
             <th>#</th>
             <th>Course Name</th>
-            <th>assignments</th>
+            <th>Assignments</th>
             <th>Status</th>
             <th></th>
             <th></th>
@@ -51,7 +51,7 @@
         <tr {% if not course.is_active %}class="disabled" {% endif %}>
             <td colspan="6">
                 <div class="collapse{%- if expand==course.name %} in{%- endif -%}" id="collapse{{loop.index}}">
-                    <button type="button" class="btn btn-default btn-sm" onclick="addassignment('{{course.name}}')"
+                    <button type="button" class="btn btn-default btn-sm" onclick="addAssignment('{{course.name}}')"
                             aria-label="Add assignment" style="margin-bottom: 8px;">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add a assignment to
                         {{course.name}}
@@ -81,12 +81,12 @@
                                     </td>
                                     <td>{% if assignment.is_active %}
                                         <button class="btn btn-danger btn-sm"
-                                                onclick="toggleassignmentStatus('{{course.name}}','{{assignment.name}}')">
+                                                onclick="toggleAssignmentStatus('{{course.name}}','{{assignment.name}}')">
                                             Inactivate
                                         </button>
                                         {% else %}
                                         <button class="btn btn-success btn-sm"
-                                                onclick="toggleassignmentStatus('{{course.name}}','{{assignment.name}}')">
+                                                onclick="toggleAssignmentStatus('{{course.name}}','{{assignment.name}}')">
                                             Activate
                                         </button>
                                         {% endif %}
@@ -147,12 +147,12 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="assignmentModalLabel">Add a assignment</h4>
+                <h4 class="modal-title" id="assignmentModalLabel">Add an assignment</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" id="assignmentModalForm" method="post" style="text-align: center;">
                     <div class="form-group">
-                        <label for="assignmentName" class="col-sm-4 control-label">assignment Name:</label>
+                        <label for="assignmentName" class="col-sm-4 control-label">Assignment Name:</label>
 
                         <div class="col-sm-8" id="assignmentNameContainer">
                             <input type="text" class="form-control" id="assignmentName" name="assignmentName"
@@ -166,7 +166,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="submitassignment()">Add assignment</button>
+                <button type="button" class="btn btn-primary" onclick="submitAssignment()">Add assignment</button>
             </div>
         </div>
     </div>

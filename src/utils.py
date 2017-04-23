@@ -103,7 +103,7 @@ def error_codes():
         '100': "Oops! Something went wrong please try again.",
         '101': "Sorry you are not registered with this application, please contact your instructor.",
         '102': "Sorry you are not an instructor.",
-        '103': "Sorry no rounds are active for this section, please try again later.",
+        '103': "Sorry no rounds are active for this assignment, please try again later.",
         '104': "Sorry the round was not found, please contact your Instructor.",
         '105': "Sorry, your group was not found, please contact your Instructor.",
         '106': "Sorry, you are not in a group, please contact your Instructor."
@@ -204,13 +204,13 @@ def check_privilege(expected_role):
 
 # end
 
-def get_current_round(section):
+def get_current_round(assignment):
     """
     Fetches and returns the current round
     """
-    # Check that the rounds for this section have actually started
-    if section.current_round != 0:
-        rounds = model.Round.query(ancestor=section.key).fetch()
+    # Check that the rounds for this assignment have actually started
+    if assignment.current_round != 0:
+        rounds = model.Round.query(ancestor=assignment.key).fetch()
         if rounds:
             for i in range(len(rounds)):
                 # get start time and end time of the round
@@ -224,9 +224,9 @@ def get_current_round(section):
                 # return that round
                 current_time = datetime.datetime.now()
                 if start_time < current_time < end_time:
-                    if section.current_round != rounds[i].number:
-                        section.current_round = rounds[i].number
-                        section.put()
+                    if assignment.current_round != rounds[i].number:
+                        assignment.current_round = rounds[i].number
+                        assignment.put()
                     return rounds[i].number
                     # end if
                     # end for
@@ -237,21 +237,21 @@ def get_current_round(section):
 
 # end get_current_round
 
-def get_template_all_courses_and_sections(instructor, course_name, selected_section):
+def get_template_all_courses_and_assignments(instructor, course_name, selected_assignment):
     """
-    Fetches the courses and sections for the given instructor.
+    Fetches the courses and assignments for the given instructor.
 
     Args:
         instructor (object):
           Instructor whose courses are to be retrieved
         course_name (str):
-          Name of the course whose sections are to be retrieved (optional)
-        selected_section (str):
-          Name of the selected section (optional)
+          Name of the course whose assignments are to be retrieved (optional)
+        selected_assignment (str):
+          Name of the selected assignment (optional)
 
     Returns:
         template_values (dict):
-            Courses and sections to be rendered.
+            Courses and assignments to be rendered.
 
     """
     # First, built an empty dict to hold all the template values
@@ -275,45 +275,45 @@ def get_template_all_courses_and_sections(instructor, course_name, selected_sect
         # end
         # And set the name in the template values
         template_values['selectedCourse'] = course.name
-        # Now try and grab the sections from the db
-        sections = model.Assignment.query(ancestor=course.key).fetch()
-        # If there are no sections and a course name wasn't passed in
-        if not sections and not course_name:
-            # Grab all sections of the "default" course
-            sections = model.Assignment.query(ancestor=courses[0].key).fetch()
+        # Now try and grab the assignments from the db
+        assignments = model.Assignment.query(ancestor=course.key).fetch()
+        # If there are no assignments and a course name wasn't passed in
+        if not assignments and not course_name:
+            # Grab all assignments of the "default" course
+            assignments = model.Assignment.query(ancestor=courses[0].key).fetch()
         # end
         # And add them to the template values
-        template_values['sections'] = sections
-        # And if there are sections
-        if sections:
-            section = None
-            # And if a particular section name was passed in
-            if selected_section:
-                # Try and grab that section from the database
-                selected_section = selected_section.upper()
-                section = model.Assignment.get_by_id(selected_section, parent=course.key)
+        template_values['assignments'] = assignments
+        # And if there are assignments
+        if assignments:
+            assignment = None
+            # And if a particular assignment name was passed in
+            if selected_assignment:
+                # Try and grab that assignment from the database
+                selected_assignment = selected_assignment.upper()
+                assignment = model.Assignment.get_by_id(selected_assignment, parent=course.key)
             # end
-            # If it wasn't found, set a default section
-            if not section:
-                section = sections[0]
+            # If it wasn't found, set a default assignment
+            if not assignment:
+                assignment = assignments[0]
             # end
             # And set the rest of the template values
-            template_values['selectedSection'] = section.name
-            template_values['selectedSectionObject'] = section
-            if section.students:
-                template_values['students'] = section.students
+            template_values['selectedAssignment'] = assignment.name
+            template_values['selectedAssignmentObject'] = assignment
+            if assignment.students:
+                template_values['students'] = assignment.students
                 # end
     # end
     # And finally return the template values
     return template_values
 
 
-# end get_template_all_courses_and_sections
+# end get_template_all_courses_and_assignments
 
-def get_course_and_section_objs(page_handler, instructor):
+def get_course_and_assignment_objs(page_handler, instructor):
     """
     Given the page handler and the currently logged in instructor, returns the
-    course and section objects from the database from their keys on the page.
+    course and assignment objects from the database from their keys on the page.
 
     Args:
         page_handler (webapp2.RequestHandler object):
@@ -322,21 +322,21 @@ def get_course_and_section_objs(page_handler, instructor):
           The currently logged in instructor object.
 
     Returns:
-        <course, section>:
-          A tuple where the course and section object have been retrieved from
+        <course, assignment>:
+          A tuple where the course and assignment object have been retrieved from
           the database given their id keys from the request handler.
 
     """
-    # First, grab the course and section from the page
+    # First, grab the course and assignment from the page
     course_name = page_handler.get('course').upper()
-    section_name = page_handler.get('section').upper()
-    # And set the course and section to null
-    course, section = None, None
+    assignment_name = page_handler.get('assignment').upper()
+    # And set the course and assignment to null
+    course, assignment = None, None
 
     # Check that we actually get them
-    if not course_name or not section_name:
+    if not course_name or not assignment_name:
         # Error if not
-        error('Invalid arguments: course_name or section_name is null', handler=page_handler)
+        error('Invalid arguments: course_name or assignment_name is null', handler=page_handler)
     else:
         # Now grab the course from the database
         course = model.Course.get_by_id(course_name, parent=instructor.key)
@@ -345,20 +345,20 @@ def get_course_and_section_objs(page_handler, instructor):
             # Error if not
             error('Course {c} does not exist!'.format(c=course_name), handler=page_handler)
         else:
-            # Now grab the section from the database
-            section = model.Assignment.get_by_id(section_name, parent=course.key)
+            # Now grab the assignment from the database
+            assignment = model.Assignment.get_by_id(assignment_name, parent=course.key)
             # And check that it actually exists
-            if not section:
+            if not assignment:
                 # Error if not
-                error('Section {s} does not exist!'.format(s=section_name), handler=page_handler)
+                error('Assignment {s} does not exist!'.format(s=assignment_name), handler=page_handler)
                 # end
                 # end
     # end
-    # And finally return the course and section
-    return course, section
+    # And finally return the course and assignment
+    return course, assignment
 
 
-# end get_course_and_section_objs
+# end get_course_and_assignment_objs
 
 def is_valid_response(response):
     """
@@ -418,16 +418,16 @@ def convert_time(old_time):
 # end convert_time
 
 
-def send_mail(senders_email, section, subject, message):
+def send_mail(senders_email, assignment, subject, message):
     """
-    Given the senders email(instructor) and the section object,
-    send an email to all students in the section from the instructor.
+    Given the senders email(instructor) and the assignment object,
+    send an email to all students in the assignment from the instructor.
 
     Args:
         senders_email:
             The instructor currently logged in.
-        section (object):
-            The section to send the emails to.
+        assignment (object):
+            The assignment to send the emails to.
         subject (string):
             The subject line of the email.
         message (string):
@@ -438,8 +438,8 @@ def send_mail(senders_email, section, subject, message):
     email_subject = "Consider Assignment"
     email_message = "The rounds have started"
 
-    # Grab all the student emails from the section object
-    recipient_emails = [s.email for s in section.students]
+    # Grab all the student emails from the assignment object
+    recipient_emails = [s.email for s in assignment.students]
     # Subject of the email
     if subject:
         email_subject = subject
@@ -471,13 +471,13 @@ def get_grader_info(email, graders):
 # end
 
 
-def get_current_round_object(section):
+def get_current_round_object(assignment):
     """
     Fetches and returns the current round
     """
-    # Check that the rounds for this section have actually started
-    if section.current_round != 0:
-        rounds = model.Round.query(ancestor=section.key).fetch()
+    # Check that the rounds for this assignment have actually started
+    if assignment.current_round != 0:
+        rounds = model.Round.query(ancestor=assignment.key).fetch()
         if rounds:
             for i in range(len(rounds)):
                 # get start time and end time of the round
@@ -492,9 +492,9 @@ def get_current_round_object(section):
                 # return that round
                 current_time = datetime.datetime.now()
                 if start_time < current_time < end_time:
-                    if section.current_round != rounds[i].number:
-                        section.current_round = rounds[i].number
-                        section.put()
+                    if assignment.current_round != rounds[i].number:
+                        assignment.current_round = rounds[i].number
+                        assignment.put()
                     return rounds[i]
                     # end if
                     # end for
@@ -505,13 +505,13 @@ def get_current_round_object(section):
 
 # end get_current_round_object
 
-def get_next_round_object(section):
+def get_next_round_object(assignment):
     """
     Fetches and returns the current round
     """
-    # Check that the rounds for this section have actually started
-    if section.current_round != 0:
-        rounds = model.Round.query(ancestor=section.key).fetch()
+    # Check that the rounds for this assignment have actually started
+    if assignment.current_round != 0:
+        rounds = model.Round.query(ancestor=assignment.key).fetch()
         if rounds:
             for i in range(len(rounds) - 1):
                 # get start time and end time of the round
@@ -525,9 +525,9 @@ def get_next_round_object(section):
                 # return that round
                 current_time = datetime.datetime.now()
                 if current_time > start_time and current_time < end_time:
-                    if section.current_round != rounds[i].number:
-                        section.current_round = rounds[i].number
-                        section.put()
+                    if assignment.current_round != rounds[i].number:
+                        assignment.current_round = rounds[i].number
+                        assignment.put()
                     return rounds[i + 1]
                     # end if
                     # end for

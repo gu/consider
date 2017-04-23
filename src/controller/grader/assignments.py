@@ -19,7 +19,7 @@ from datetime import datetime
 from src import model, utils
 
 
-class assignments(webapp2.RequestHandler):
+class Assignments(webapp2.RequestHandler):
     """
     Handles requests for managing assignments: adding a assignment, toggling its status, etc.
     """
